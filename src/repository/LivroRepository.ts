@@ -18,12 +18,17 @@ export class LivroRepository{
     private async criarTable(){
         const query = `CREATE TABLE IF NOT EXISTS lectus_bd.Livro(
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                isbn VARCHAR(13) NOT NULL UNIQUE,
+                categoria_id INT NOT NULL
                 titulo VARCHAR(255) NOT NULL,
+                isbn VARCHAR(13) NOT NULL UNIQUE,
+                preco INT(10,2) NOT NULL,
+                estoque INT NOT NULL,
+                sinopse TEXT,
+                imageURL VARCHAR(255),
                 autor VARCHAR(255) NOT NULL,
                 editora VARCHAR(255) NOT NULL,
-                anoPublicação INT NOT NULL, 
-                promocao I
+                data_publicação DATE,
+                promocao BOOLEAN
                 )`
 
         try{
@@ -36,7 +41,7 @@ export class LivroRepository{
 
     async insereLivro(livro: LivroModel): Promise<LivroModel>{
         const resultado = await executarComandoSQL(
-            "INSERT INTO lectus_bd.Livro (isbn, titulo, autor, editora, anoPublicacao) values (?,?,?,?,?)",
+            "INSERT INTO lectus_bd.Livro (categoria_id, titulo, isbn, preco, estoque, sinopse, imageURL, autor, editora, data_publicacao) values (?,?,?,?,?)",
             [
                 livro.isbn, 
                 livro.titulo,
