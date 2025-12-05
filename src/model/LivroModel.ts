@@ -2,20 +2,30 @@ export class LivroModel {
     static proximoId: number = 1;
 
     id: number;
-    isbn: string;
+    categoria_id: number;
     titulo: string;
     autor: string;
+    isbn: string;
+    preco: number;
+    estoque: number;
+    sinopse: string;
+    imageURL: string;
     editora: string;
-    anoPublicacao: number;
+    data_publicacao: Date;
     promocao: boolean = false;
 
-    constructor(isbn: string, titulo: string, autor: string, editora: string, anoPublicacao: number) {
+    constructor(categoria_id: number, titulo: string, autor: string, isbn: string, preco: number, estoque: number, sinopse: string, imageURL: string, editora: string, data_publicacao: Date) {
         this.id = LivroModel.proximoId++;
-        this.isbn = isbn;
+        this.categoria_id = categoria_id;
         this.titulo = titulo;
+        this.isbn = isbn;
+        this.preco = preco;
+        this.estoque = estoque;
+        this.sinopse = sinopse;
+        this.imageURL = imageURL;
         this.autor = autor;
         this.editora = editora;
-        this.anoPublicacao = anoPublicacao;
+        this.data_publicacao = data_publicacao;
     }
 
     //GETTERS
@@ -24,12 +34,32 @@ export class LivroModel {
         return this.id;
     }
 
-    getIsbn(): string{
-        return this.isbn;
+    getCategoriaId(): number{
+        return this.categoria_id;
     }
 
     getTitulo(): string{
         return this.titulo;
+    }
+
+    getIsbn(): string{
+        return this.isbn;
+    }
+
+    getPreco(): number{
+        return this.preco;
+    }
+
+    getEstoque(): number{
+        return this.estoque;
+    }
+
+    getSinopse(): string{
+        return this.sinopse;
+    }
+
+    getImageURL(): string{
+        return this.imageURL;
     }
 
     getAutor(): string{
@@ -40,8 +70,8 @@ export class LivroModel {
         return this.editora;
     }
 
-    getAnoPublicacao(): number{
-        return this.anoPublicacao;
+    getDataPublicacao(): Date{
+        return this.data_publicacao;
     }
 
     getPromocao(): boolean{
@@ -50,12 +80,32 @@ export class LivroModel {
 
     //SETTERS
 
-    setIsbn(isbn: string): void{
-        this.isbn = isbn;
+    setCategoriaId(categoria_id: number): void{
+        this.categoria_id = categoria_id;
     }
 
     setTitulo(titulo: string): void{
         this.titulo = titulo;
+    }
+
+    setIsbn(isbn: string): void{
+        this.isbn = isbn;
+    }
+
+    setPreco(preco: number): void{
+        this.preco = preco;
+    }
+
+    setEstoque(estoque: number): void{
+        this.estoque = estoque;
+    }
+
+    setSinopse(sinopse: string): void{
+        this.sinopse = sinopse;
+    }
+
+    setImageURL(imageURL: string): void{
+        this.imageURL = imageURL;
     }
 
     setAutor(autor: string): void{
@@ -66,8 +116,8 @@ export class LivroModel {
         this.editora = editora;
     }
 
-    setAnoPublicacao(anoPublicacao: number){
-        this.anoPublicacao = anoPublicacao;
+    setDataPublicacao(data_publicacao: Date){
+        this.data_publicacao = data_publicacao;
     }
 
     setPromocao(promocao: boolean){
