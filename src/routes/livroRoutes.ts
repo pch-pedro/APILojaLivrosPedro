@@ -12,6 +12,9 @@ router.get('/', (req, res) => LivroController.listarLivros(req, res));
 // GET /livros/:id - buscar livro por id
 router.get('/:id', (req, res) => LivroController.filtrarLivro(req, res));
 
+// GET /livros/:isbn - buscar livro pelo ISBN
+router.get('/:isbn', (req, res) => LivroController.filtrarLivroISBN(req, res));
+
 // PUT /livros/:id - atualizar livro
 router.put('/:id', (req, res) => LivroController.atualizaLivro(req, res));
 
