@@ -75,6 +75,26 @@ export class LivroRepository{
         return isbn.toString().length === 13;
     }
 
+    async filtraLivroPorISBN(isbn: string): Promise<LivroModel | null>{
+        const resultado = await executarComandoSQL("SELECT * FROM lectus_bd.Livro WHERE isbn = ? LIMIT 1", [isbn]);
+        if(resultado && resultado.length > 0){
+            const row = resultado[0];
+            return new LivroModel(
+                row.categoria_id,
+                row.titulo,
+                row.isbn,
+                row.preco,
+                row.estoque,
+                row.sinopse,
+                row.imageURL,
+                row.autor,
+                row.editora,
+                row.data_publicacao
+            );
+        }
+        return null;
+    }
+
     async filtraLivroPorId(id: number): Promise<LivroModel | null>{
         const resultado = await executarComandoSQL("SELECT * FROM lectus_bd.Livro WHERE id = ?", [id]);
         if(resultado && resultado.length > 0) {
@@ -95,8 +115,13 @@ export class LivroRepository{
         return null;
     }
 
-    async validacaoLivro(id: number): Promise<boolean> {
+    async validacaoLivroPorId(id: number): Promise<boolean> {
         const livro = await this.filtraLivroPorId(id);
+        return livro !== null;
+    }
+
+    async validacaoLivroPorISBN(isbn: string): Promise<boolean> {
+        const livro = await this.filtraLivroPorISBN(isbn);
         return livro !== null;
     }
 
