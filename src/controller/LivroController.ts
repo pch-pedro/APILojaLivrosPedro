@@ -41,6 +41,21 @@ export class LivroController{
         }
     }
 
+    async filtrarLivroISBN(req: Request, res: Response): Promise<void>{
+        try{
+            const isbn = req.params.id || req.body.id;
+            const livro = await this.livroService.filtrarLivroISBN({ isbn });
+            
+            res.json(LivroView.formatarSucesso(
+                LivroView.formatarLivro(livro),
+                'Livro encontrado',
+                200
+            ));
+        } catch(err: any){
+            res.status(404).json(LivroView.formatarErro(err.message || 'Livro não encontrado', 404));
+        }
+    }
+
     async listarLivros(req: Request, res: Response): Promise<void>{
         try{
             const livros = await this.livroService.listarLivros();

@@ -43,7 +43,7 @@ export class LivroService{
     }
 
     //Função Adicionada: Filtrar Livro por ISBN
-    async filtrarLivroISBN(data: any): Promise<LivroModel | null>{
+    async filtrarLivroISBN(data: any): Promise<LivroModel>{
         const isbn = data.isbn;
 
         if(this.livroRepository.validacaoISBN(isbn) === false){

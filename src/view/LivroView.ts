@@ -6,12 +6,12 @@ export class LivroView {
             id: livro.getId(),
             categoria_id: livro.getCategoriaId(),
             titulo: livro.getTitulo(),
+            autor: livro.getAutor(),            
             isbn: livro.getIsbn(),
             preco: livro.getPreco(),
             estoque: livro.getEstoque(),
             sinopse: livro.getSinopse(),
             imageURL: livro.getImageURL(),
-            autor: livro.getAutor(),
             editora: livro.getEditora(),
             data_publicacao: livro.getDataPublicacao(),
             promocao: livro.getPromocao()
