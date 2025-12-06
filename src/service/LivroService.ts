@@ -42,6 +42,23 @@ export class LivroService{
         return livro;
     }
 
+    //Função Adicionada: Filtrar Livro por ISBN
+    async filtrarLivroISBN(data: any): Promise<LivroModel | null>{
+        const isbn = data.isbn;
+
+        if(this.livroRepository.validacaoISBN(isbn) === false){
+            throw new Error("O ISBN informado eh invalido. Eh necessário 13 caracteres");
+        }
+
+        const livro = await this.livroRepository.filtraLivroPorISBN(isbn);
+
+        if(livro === null){
+            throw new Error("Livro com o ISBN:" + isbn + "nao encontrado no sistema");
+        }
+
+        return livro;
+    }
+
     async removeLivro(id: number): Promise<LivroModel>{
         const livroRemovido = await this.livroRepository.removeLivroPorId(id);
         if(!livroRemovido){
