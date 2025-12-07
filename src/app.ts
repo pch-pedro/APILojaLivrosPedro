@@ -1,6 +1,6 @@
 import express, { type Express } from 'express';
-import livroRoutes from './routes/livroRoutes';
-import usuarioRoutes from './routes/usuarioRoutes';
+import livroRoutes from './routes/livroRoutes.js';
+import usuarioRoutes from './routes/usuarioRoutes.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;

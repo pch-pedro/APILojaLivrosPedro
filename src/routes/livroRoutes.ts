@@ -1,24 +1,82 @@
-import { Router } from 'express';
-import LivroController from '../controller/LivroController';
+import { Router, Request, Response } from 'express';
+import LivroService from '../service/LivroService';
+import { LivroView } from '../view/LivroView';
 
 const router = Router();
 
 // POST /livros - criar novo livro
-router.post('/', (req, res) => LivroController.criarLivro(req, res));
+router.post('/', async (req: Request, res: Response) => {
+	try{
+		const data = req.body;
+		const livro = await LivroService.novoLivro(data);
+		return res.status(201).json(LivroView.formatarSucesso(LivroView.formatarLivro(livro), 'Livro criado com sucesso', 201));
+	} catch(err: any){
+		return res.status(400).json(LivroView.formatarErro(err.message || 'Erro ao criar livro', 400));
+	}
+});
 
 // GET /livros - listar todos os livros
-router.get('/', (req, res) => LivroController.listarLivros(req, res));
+router.get('/', async (req: Request, res: Response) => {
+	try{
+		const livros = await LivroService.listarLivros();
+		return res.json(LivroView.formatarSucesso(LivroView.formatarListaLivros(livros), 'Livros listados com sucesso', 200));
+	} catch(err: any){
+		return res.status(500).json(LivroView.formatarErro(err.message || 'Erro ao listar livros', 500));
+	}
+});
 
 // GET /livros/:id - buscar livro por id
-router.get('/:id', (req, res) => LivroController.filtrarLivro(req, res));
-
-// GET /livros/:isbn - buscar livro pelo ISBN
-router.get('/:isbn', (req, res) => LivroController.filtrarLivroISBN(req, res));
+router.get('/:id', async (req: Request, res: Response) => {
+	try{
+		const id = Number(req.params.id);
+		const livro = await LivroService.filtrarLivro({ id });
+		if (!livro) {
+			return res.status(404).json(LivroView.formatarErro('Livro não encontrado', 404));
+		}
+		return res.json(LivroView.formatarSucesso(LivroView.formatarLivro(livro), 'Livro encontrado', 200));
+	} catch(err: any){
+		return res.status(404).json(LivroView.formatarErro(err.message || 'Livro não encontrado', 404));
+// GET /livros/isbn/:isbn - buscar livro pelo ISBN
+router.get('/isbn/:isbn', async (req: Request, res: Response) => {
+	try{
+		const isbn = String(req.params.isbn);
+		const livro = await LivroService.filtrarLivroPorISBN(isbn);
+		if (!livro) {
+			return res.status(404).json(LivroView.formatarErro('Livro não encontrado por ISBN', 404));
+		}
+		return res.json(LivroView.formatarSucesso(LivroView.formatarLivro(livro), 'Livro encontrado por ISBN', 200));
+	} catch(err: any){
+		return res.status(404).json(LivroView.formatarErro(err.message || 'Livro não encontrado por ISBN', 404));
+	}
+});
+		return res.status(404).json(LivroView.formatarErro(err.message || 'Livro não encontrado por ISBN', 404));
+	}
+});
 
 // PUT /livros/:id - atualizar livro
-router.put('/:id', (req, res) => LivroController.atualizaLivro(req, res));
+router.put('/:id', async (req: Request, res: Response) => {
+	try{
+		const id = Number(req.params.id);
+		const novosDados = req.body;
+		const atualizado = await LivroService.atualizaLivro({ id, novosDados });
+		if (!atualizado) {
+			return res.status(404).json(LivroView.formatarErro('Livro não encontrado', 404));
+		}
+		return res.json(LivroView.formatarSucesso(LivroView.formatarLivro(atualizado), 'Livro atualizado com sucesso', 200));
+	} catch(err: any){
+		return res.status(400).json(LivroView.formatarErro(err.message || 'Erro ao atualizar livro', 400));
+	}
+});
 
 // DELETE /livros/:id - remover livro
-router.delete('/:id', (req, res) => LivroController.removerLivro(req, res));
+router.delete('/:id', async (req: Request, res: Response) => {
+	try{
+		const id = Number(req.params.id);
+		const removido = await LivroService.removeLivro(id);
+		return res.json(LivroView.formatarSucesso(LivroView.formatarLivro(removido), 'Livro removido com sucesso', 200));
+	} catch(err: any){
+		return res.status(404).json(LivroView.formatarErro(err.message || 'Erro ao remover livro', 404));
+	}
+});
 
 export default router;

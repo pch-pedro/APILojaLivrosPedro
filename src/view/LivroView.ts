@@ -1,4 +1,4 @@
-import { LivroModel } from "../model/LivroModel";
+import { LivroModel } from "../model/entity/LivroModel";
 
 export class LivroView {
     static formatarLivro(livro: LivroModel): object {

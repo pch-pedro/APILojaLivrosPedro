@@ -1,34 +1,65 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
-import mysql, { type Connection, type QueryError } from 'mysql2';
+import mysql, { Pool } from 'mysql2';
 
+const dbName = process.env.MYSQLDATABASE || 'lectus_db';
 const dbConfig = {
-    host: process.env.MYSQLHOST,
-    port: Number(process.env.MYSQLPORT),
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE 
+    host: process.env.MYSQLHOST || 'localhost',
+    port: Number(process.env.MYSQLPORT || 3306),
+    user: process.env.MYSQLUSER || 'root',
+    password: process.env.MYSQLPASSWORD || 'root'
 };
 
-const mysqlConnection: Connection = mysql.createConnection(dbConfig);
+// Config para o pool já com database
+const poolConfig = {
+    ...dbConfig,
+    database: dbName,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
 
-mysqlConnection.connect((err) => {
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados: ', err);
-        throw err;
-    }
+let pool: Pool | null = null;
 
-    console.log('Conexao bem-sucedida com o banco de dados MYSQL');
-})
+// Promise que indica quando o pool estiver pronto (após criar o DB se necessário)
+const poolReady: Promise<void> = new Promise((resolve, reject) => {
+    const tmpConn = mysql.createConnection(dbConfig);
+    // cria o database caso não exista
+    tmpConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`, (err) => {
+        tmpConn.end();
+        if (err) {
+            console.error('Erro ao garantir database:', err);
+            return reject(err);
+        }
 
-export function executarComandoSQL(query: string, valores: any[]): Promise<any> {
+        // agora cria o pool apontando para o database
+        pool = mysql.createPool(poolConfig);
+        console.log('Pool MySQL criado e database assegurado:', dbName);
+        resolve();
+    });
+});
+
+export async function executarComandoSQL(query: string, valores: any[] = []): Promise<any> {
+    await poolReady;
     return new Promise((resolve, reject) => {
-        mysqlConnection.query(query, valores, (err, resultado) => {
+        if (!pool) return reject(new Error('Pool MySQL não inicializado'));
+        pool.query(query, valores, (err, resultado) => {
             if (err) {
-                console.error('Erro ao executar a query.', err);
-                reject(err);
+                console.error('Erro ao executar a query. ', err);
+                return reject(err);
             }
             resolve(resultado);
+        });
+    });
+}
+
+export async function fecharConexao(): Promise<void> {
+    await poolReady;
+    return new Promise((resolve, reject) => {
+        if (!pool) return resolve();
+        pool.end((err) => {
+            if (err) return reject(err);
+            resolve();
         });
     });
 }

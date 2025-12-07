@@ -37,31 +37,31 @@ export class LivroController extends Controller{
         }
     }
 
-    @Get("{isbn}")
+    @Get("{id}")
     async filtrarLivro(
-        @Path() isbn: string,
+        @Path() id: number,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,
         @Res() success: TsoaResponse<200, BasicResponseDto>
     ): Promise<LivroDto>{
         try{
-            const livroEncontrado = await this.livroService.filtrarLivro({ isbn: String(isbn)});
+            const livroEncontrado = await this.livroService.filtrarLivro({id});
             return success(200, new BasicResponseDto("Livro encontrado com sucesso!", livroEncontrado));
         } catch(err: any){
             return fail(400, new BasicResponseDto(err.message, undefined));
         }
     }
 
-    @Put("{isbn}")
+    @Put("{id}")
     async atualizarLivro(
-        @Path() isbn: string,
+        @Path() id: number,
         @Body() dto: LivroDto,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,
         @Res() success: TsoaResponse<200, BasicResponseDto>
     ): Promise<void>{
         try{
-            dto.isbn = String(dto.isbn);
+            dto.id = id;
             const livroAtualizado = await this.livroService.atualizaLivro({
-                isbn: isbn,
+                id: id,
                 novosDados: dto
             });
 
@@ -71,7 +71,7 @@ export class LivroController extends Controller{
         }
     }
 
-    @Delete("{isbn}")
+    @Delete("{id}")
     async removerLivro(
         @Path() id: number,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,

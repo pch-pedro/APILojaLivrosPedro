@@ -16,7 +16,7 @@ export class LivroRepository{
     }
 
     private async criarTable(){
-        const query = `CREATE TABLE IF NOT EXISTS lectus_bd.Livro(
+        const query = `CREATE TABLE IF NOT EXISTS Livro(
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 categoria_id INT NOT NULL,
                 titulo VARCHAR(255) NOT NULL,
@@ -52,7 +52,7 @@ export class LivroRepository{
         }
 
         const resultado = await executarComandoSQL(
-            "INSERT INTO lectus_bd.Livro (categoria_id, titulo, autor, isbn, preco, estoque, sinopse, imageURL, editora, data_publicacao, promocao) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Livro (categoria_id, titulo, autor, isbn, preco, estoque, sinopse, imageURL, editora, data_publicacao, promocao) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 livro.categoria_id, 
                 livro.titulo,
@@ -89,7 +89,7 @@ export class LivroRepository{
     }
 
     async filtraLivroPorISBN(isbn: string): Promise<LivroModel | null>{
-        const resultado = await executarComandoSQL("SELECT * FROM lectus_bd.Livro WHERE isbn = ? LIMIT 1", [isbn]);
+        const resultado = await executarComandoSQL("SELECT * FROM Livro WHERE isbn = ? LIMIT 1", [isbn]);
         if(resultado && resultado.length > 0){
             const row = resultado[0];
             return new LivroModel(
@@ -109,7 +109,7 @@ export class LivroRepository{
     }
 
     async filtraLivroPorId(id: number): Promise<LivroModel | null>{
-        const resultado = await executarComandoSQL("SELECT * FROM lectus_bd.Livro WHERE id = ?", [id]);
+        const resultado = await executarComandoSQL("SELECT * FROM Livro WHERE id = ?", [id]);
         if(resultado && resultado.length > 0) {
             const user = resultado[0];
             return new LivroModel(
@@ -144,7 +144,7 @@ export class LivroRepository{
             return null;
        }
 
-       await executarComandoSQL("DELETE FROM lectus_bd.Livro where id = ?", [id]);
+    await executarComandoSQL("DELETE FROM Livro where id = ?", [id]);
        return livro;
     }
 
@@ -206,7 +206,7 @@ export class LivroRepository{
             return await this.filtraLivroPorId(id);
         }
 
-        const sql = `UPDATE lectus_bd.Livro SET ${campos.join(", ")} WHERE id = ?`;
+        const sql = `UPDATE Livro SET ${campos.join(", ")} WHERE id = ?`;
         valores.push(id);
 
         const resultado = await executarComandoSQL(sql, valores);
@@ -217,7 +217,7 @@ export class LivroRepository{
 
     async listarLivros(): Promise<LivroModel[]>{
         //Validação Adicionada: Retornando os livros por ordem alfabética e apenas se seu estoque for maior que zero.
-        const resultado = await executarComandoSQL("SELECT * FROM lectus_bd.Livro WHERE estoque > 0 ORDER BY titulo ASC", []);
+        const resultado = await executarComandoSQL("SELECT * FROM Livro WHERE estoque > 0 ORDER BY titulo ASC", []);
         const livros: LivroModel[] = [];
         if(resultado && resultado.length > 0){
             for(let i = 0; i < resultado.length; i++){

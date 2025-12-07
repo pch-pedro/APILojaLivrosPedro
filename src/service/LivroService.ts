@@ -42,6 +42,14 @@ export class LivroService{
         return livro;
     }
 
+    async filtrarLivroPorISBN(isbn: string): Promise<LivroModel | null> {
+        const livro = await this.livroRepository.filtraLivroPorISBN(isbn);
+        if (!livro) {
+            throw new Error('ISBN não encontrado no sistema!');
+        }
+        return livro;
+    }
+
     //Função Adicionada: Filtrar Livro por ISBN
     async filtrarLivroISBN(data: any): Promise<LivroModel>{
         const isbn = data.isbn;
