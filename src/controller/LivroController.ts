@@ -1,106 +1,88 @@
-import type { Request, Response } from 'express';
-import LivroServiceDefault, { LivroService } from '../service/LivroService';
-import { LivroView } from '../view/LivroView';
+import { LivroService } from "../service/LivroService";
+import { Body, Controller, Delete, Get, Path, Post, Put, Query, Res, Route, Tags } from "tsoa";
+import type { TsoaResponse } from "tsoa";
+import { BasicResponseDto } from "../model/dto/BasicResponseDto";
+import { LivroDto } from "../model/dto/LivroDto";
 
-export class LivroController{
-    private livroService: LivroService;
+@Route("livro")
+@Tags("Livro")
+export class LivroController extends Controller{
+    livroService = new LivroService();
 
-    constructor(){
-        this.livroService = LivroServiceDefault as unknown as LivroService;
-    }
-
-    async criarLivro(req: Request, res: Response): Promise<void>{
+    @Post()
+    async criarLivro(
+        @Body() dto: LivroDto,
+        @Res() fail: TsoaResponse<400, BasicResponseDto>,
+        @Res() success: TsoaResponse<201, BasicResponseDto>
+    ): Promise<void>{
         try{
-            const data = req.body;
-            const livro = await this.livroService.novoLivro(data);
-            res.status(201).json(LivroView.formatarSucesso(
-                LivroView.formatarLivro(livro),
-                'Livro criado com sucesso',
-                201
-            ));
+            dto.isbn = String(dto.isbn);
+            const livro = await this.livroService.novoLivro(dto);
+            return success(201, new BasicResponseDto("Livro cadastrado com sucesso!", livro));
         } catch(err: any){
-            res.status(400).json(LivroView.formatarErro(err.message || 'Erro ao criar livro', 400));
+            return fail(400, new BasicResponseDto(err.message, undefined));
         }
     }
 
-    async filtrarLivro(req: Request, res: Response): Promise<void>{
-        try{
-            const id = Number(req.params.id || req.body.id);
-            const livro = await this.livroService.filtrarLivro({ id });
-            if (!livro) {
-                res.status(404).json(LivroView.formatarErro('Livro não encontrado', 404));
-                return;
-            }
-            res.json(LivroView.formatarSucesso(
-                LivroView.formatarLivro(livro),
-                'Livro encontrado',
-                200
-            ));
-        } catch(err: any){
-            res.status(404).json(LivroView.formatarErro(err.message || 'Livro não encontrado', 404));
-        }
-    }
-
-    async filtrarLivroISBN(req: Request, res: Response): Promise<void>{
-        try{
-            const isbn = req.params.id || req.body.id;
-            const livro = await this.livroService.filtrarLivroISBN({ isbn });
-            
-            res.json(LivroView.formatarSucesso(
-                LivroView.formatarLivro(livro),
-                'Livro encontrado',
-                200
-            ));
-        } catch(err: any){
-            res.status(404).json(LivroView.formatarErro(err.message || 'Livro não encontrado', 404));
-        }
-    }
-
-    async listarLivros(req: Request, res: Response): Promise<void>{
+    @Get()
+    async listarLivros(
+        @Res() fail: TsoaResponse<400, BasicResponseDto>,
+        @Res() success: TsoaResponse<202, BasicResponseDto>
+    ): Promise<void>{
         try{
             const livros = await this.livroService.listarLivros();
-            res.json(LivroView.formatarSucesso(
-                LivroView.formatarListaLivros(livros),
-                'Livros listados com sucesso',
-                200
-            ));
+            return success(202, new BasicResponseDto("Livros Cadastrados: ", livros));
         } catch(err: any){
-            res.status(500).json(LivroView.formatarErro(err.message || 'Erro ao listar livros', 500));
+            return fail(400, new BasicResponseDto(err.message, undefined));
         }
     }
 
-    async removerLivro(req: Request, res: Response): Promise<void>{
+    @Get("{isbn}")
+    async filtrarLivro(
+        @Path() isbn: string,
+        @Res() fail: TsoaResponse<400, BasicResponseDto>,
+        @Res() success: TsoaResponse<200, BasicResponseDto>
+    ): Promise<LivroDto>{
         try{
-            const id = Number(req.params.id);
-            const removido = await this.livroService.removeLivro(id);
-            res.json(LivroView.formatarSucesso(
-                LivroView.formatarLivro(removido),
-                'Livro removido com sucesso',
-                200
-            ));
+            const livroEncontrado = await this.livroService.filtrarLivro({ isbn: String(isbn)});
+            return success(200, new BasicResponseDto("Livro encontrado com sucesso!", livroEncontrado));
         } catch(err: any){
-            res.status(404).json(LivroView.formatarErro(err.message || 'Erro ao remover livro', 404));
+            return fail(400, new BasicResponseDto(err.message, undefined));
         }
     }
 
-    async atualizaLivro(req: Request, res: Response): Promise<void>{
+    @Put("{isbn}")
+    async atualizarLivro(
+        @Path() isbn: string,
+        @Body() dto: LivroDto,
+        @Res() fail: TsoaResponse<400, BasicResponseDto>,
+        @Res() success: TsoaResponse<200, BasicResponseDto>
+    ): Promise<void>{
         try{
-            const id = Number(req.params.id || req.body.id);
-            const novosDados = req.body.novosDados || req.body;
-            const atualizado = await this.livroService.atualizaLivro({ id, novosDados });
-            if (!atualizado) {
-                res.status(404).json(LivroView.formatarErro('Livro não encontrado', 404));
-                return;
-            }
-            res.json(LivroView.formatarSucesso(
-                LivroView.formatarLivro(atualizado),
-                'Livro atualizado com sucesso',
-                200
-            ));
+            dto.isbn = String(dto.isbn);
+            const livroAtualizado = await this.livroService.atualizaLivro({
+                isbn: isbn,
+                novosDados: dto
+            });
+
+            return success(200, new BasicResponseDto("Livro atualizado com sucesso!", livroAtualizado));
         } catch(err: any){
-            res.status(400).json(LivroView.formatarErro(err.message || 'Erro ao atualizar livro', 400));
+            return fail(400, new BasicResponseDto(err.message, undefined));
         }
     }
+
+    @Delete("{isbn}")
+    async removerLivro(
+        @Path() id: number,
+        @Res() fail: TsoaResponse<400, BasicResponseDto>,
+        @Res() success: TsoaResponse<200, BasicResponseDto>
+    ){
+        try{
+           const livroRemovido = await this.livroService.removeLivro(id);
+           return success(200, new BasicResponseDto("Livro Removido com sucesso!", livroRemovido));
+        } catch(err: any){
+            return fail(400, new BasicResponseDto(err.message, undefined));
+        }
+    }
+
 }
-
-export default new LivroController();

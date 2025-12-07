@@ -1,4 +1,4 @@
-import { LivroModel } from "../model/LivroModel";
+import { LivroModel } from "../model/entity/LivroModel";
 import { LivroRepository } from "../repository/LivroRepository";
 
 export class LivroService{
