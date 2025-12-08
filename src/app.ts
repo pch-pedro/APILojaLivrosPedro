@@ -2,6 +2,7 @@ import express, { type Express } from 'express';
 import livroRoutes from './routes/livroRoutes.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
 import categoriaRoutes from './routes/categoriaRoutes.js'
+import { setupSwagger } from './config/swagger.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,9 @@ app.use('/livros', livroRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/categorias', categoriaRoutes);
 
+// Configuração do Swagger
+setupSwagger(app);
+
 // 404 para rotas não encontradas
 app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });
@@ -27,7 +31,7 @@ app.use((req, res) => {
 
 // Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando em http://localhost:${PORT}/api-docs`);
 });
 
 export default app;

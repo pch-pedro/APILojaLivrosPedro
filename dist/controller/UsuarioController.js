@@ -22,7 +22,7 @@ const usuarioService = new UsuarioService_1.UsuarioService();
 let UsuarioController = class UsuarioController extends tsoa_1.Controller {
     async criarUsuario(dto, fail, success) {
         try {
-            const newUsuarioDto = await usuarioService.createUsuario(dto);
+            const newUsuarioDto = await usuarioService.criarUsuario(dto);
             return success(201, new BasicResponseDto_1.BasicResponseDto("Usuário cadastrado com sucesso!", newUsuarioDto));
         }
         catch (err) {
@@ -35,10 +35,9 @@ let UsuarioController = class UsuarioController extends tsoa_1.Controller {
             return fail(500, new BasicResponseDto_1.BasicResponseDto("Erro interno do servidor ao criar usuário: " + err.message, undefined));
         }
     }
-    async buscarUsuario(id, fail, success // Status de sucesso esperado
-    ) {
+    async buscarUsuario(id, fail, success) {
         try {
-            const userDto = await usuarioService.getUsuarioById(id);
+            const userDto = await usuarioService.buscarUsuarioPorId(id);
             return success(200, new BasicResponseDto_1.BasicResponseDto("Usuário encontrado com sucesso!", userDto));
         }
         catch (err) {
@@ -50,7 +49,7 @@ let UsuarioController = class UsuarioController extends tsoa_1.Controller {
     }
     async atualizarUsuario(id, dto, fail, success) {
         try {
-            const updatedUserDto = await usuarioService.updateUsuario(id, dto);
+            const updatedUserDto = await usuarioService.atualizarUsuario(id, dto);
             return success(200, new BasicResponseDto_1.BasicResponseDto("Usuário atualizado com sucesso!", updatedUserDto));
         }
         catch (err) {
@@ -65,7 +64,7 @@ let UsuarioController = class UsuarioController extends tsoa_1.Controller {
     }
     async removerUsuario(id, fail, success) {
         try {
-            await usuarioService.deleteUsuario(id);
+            await usuarioService.removerUsuario(id);
             return success(200, new BasicResponseDto_1.BasicResponseDto("Usuário removido com sucesso.", undefined));
         }
         catch (err) {

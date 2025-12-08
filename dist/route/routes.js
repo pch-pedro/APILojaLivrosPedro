@@ -7,6 +7,8 @@ const UsuarioController_1 = require("./../controller/UsuarioController");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const LivroController_1 = require("./../controller/LivroController");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+const EnderecoController_1 = require("./../controller/EnderecoController");
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const CategoriaController_1 = require("./../controller/CategoriaController");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const models = {
@@ -53,6 +55,25 @@ const models = {
             "promocao": { "dataType": "boolean", "default": false },
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "EnderecoRequestDto": {
+        "dataType": "refObject",
+        "properties": {
+            "usuario_id": { "dataType": "double", "required": true },
+            "cep": { "dataType": "string", "required": true },
+            "rua": { "dataType": "string", "required": true },
+            "numero": { "dataType": "string", "required": true },
+            "complemento": { "dataType": "string" },
+            "cidade": { "dataType": "string", "required": true },
+            "estado": { "dataType": "string", "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Partial_EnderecoRequestDto_": {
+        "dataType": "refAlias",
+        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "usuario_id": { "dataType": "double" }, "cep": { "dataType": "string" }, "rua": { "dataType": "string" }, "numero": { "dataType": "string" }, "complemento": { "dataType": "string" }, "cidade": { "dataType": "string" }, "estado": { "dataType": "string" } }, "validators": {} },
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CategoriaDto": {
@@ -287,6 +308,132 @@ function RegisterRoutes(app) {
             const controller = new LivroController_1.LivroController();
             await templateService.apiHandler({
                 methodName: 'removerLivro',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+            });
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    const argsEnderecoController_criarEndereco = {
+        dto: { "in": "body", "name": "dto", "required": true, "ref": "EnderecoRequestDto" },
+        fail: { "in": "res", "name": "500", "required": true, "ref": "BasicResponseDto" },
+        success: { "in": "res", "name": "201", "required": true, "ref": "BasicResponseDto" },
+    };
+    app.post('/endereco', ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController)), ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController.prototype.criarEndereco)), async function EnderecoController_criarEndereco(request, response, next) {
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = templateService.getValidatedArgs({ args: argsEnderecoController_criarEndereco, request, response });
+            const controller = new EnderecoController_1.EnderecoController();
+            await templateService.apiHandler({
+                methodName: 'criarEndereco',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+            });
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    const argsEnderecoController_listarEnderecosDoUsuario = {
+        usuarioId: { "in": "path", "name": "usuarioId", "required": true, "dataType": "double" },
+        fail: { "in": "res", "name": "500", "required": true, "ref": "BasicResponseDto" },
+        success: { "in": "res", "name": "200", "required": true, "ref": "BasicResponseDto" },
+    };
+    app.get('/endereco/usuario/:usuarioId', ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController)), ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController.prototype.listarEnderecosDoUsuario)), async function EnderecoController_listarEnderecosDoUsuario(request, response, next) {
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = templateService.getValidatedArgs({ args: argsEnderecoController_listarEnderecosDoUsuario, request, response });
+            const controller = new EnderecoController_1.EnderecoController();
+            await templateService.apiHandler({
+                methodName: 'listarEnderecosDoUsuario',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+            });
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    const argsEnderecoController_obterEndereco = {
+        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+        fail: { "in": "res", "name": "500", "required": true, "ref": "BasicResponseDto" },
+        success: { "in": "res", "name": "200", "required": true, "ref": "BasicResponseDto" },
+    };
+    app.get('/endereco/:id', ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController)), ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController.prototype.obterEndereco)), async function EnderecoController_obterEndereco(request, response, next) {
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = templateService.getValidatedArgs({ args: argsEnderecoController_obterEndereco, request, response });
+            const controller = new EnderecoController_1.EnderecoController();
+            await templateService.apiHandler({
+                methodName: 'obterEndereco',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+            });
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    const argsEnderecoController_atualizarEndereco = {
+        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+        dto: { "in": "body", "name": "dto", "required": true, "ref": "Partial_EnderecoRequestDto_" },
+        fail: { "in": "res", "name": "500", "required": true, "ref": "BasicResponseDto" },
+        success: { "in": "res", "name": "200", "required": true, "ref": "BasicResponseDto" },
+    };
+    app.put('/endereco/:id', ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController)), ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController.prototype.atualizarEndereco)), async function EnderecoController_atualizarEndereco(request, response, next) {
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = templateService.getValidatedArgs({ args: argsEnderecoController_atualizarEndereco, request, response });
+            const controller = new EnderecoController_1.EnderecoController();
+            await templateService.apiHandler({
+                methodName: 'atualizarEndereco',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+            });
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    const argsEnderecoController_deletarEndereco = {
+        id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+        fail: { "in": "res", "name": "500", "required": true, "ref": "BasicResponseDto" },
+        success: { "in": "res", "name": "200", "required": true, "ref": "BasicResponseDto" },
+    };
+    app.delete('/endereco/:id', ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController)), ...((0, runtime_1.fetchMiddlewares)(EnderecoController_1.EnderecoController.prototype.deletarEndereco)), async function EnderecoController_deletarEndereco(request, response, next) {
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = templateService.getValidatedArgs({ args: argsEnderecoController_deletarEndereco, request, response });
+            const controller = new EnderecoController_1.EnderecoController();
+            await templateService.apiHandler({
+                methodName: 'deletarEndereco',
                 controller,
                 response,
                 next,

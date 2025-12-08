@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EnderecoModel = void 0;
-class EnderecoModel {
-    id;
+exports.EnderecoRequestDto = void 0;
+class EnderecoRequestDto {
     usuario_id;
     cep;
     rua;
@@ -10,8 +9,7 @@ class EnderecoModel {
     complemento;
     cidade;
     estado;
-    constructor(usuario_id, cep, rua, numero, complemento, cidade, estado, id) {
-        this.id = id;
+    constructor(usuario_id, cep, rua, numero, complemento, cidade, estado) {
         this.usuario_id = usuario_id;
         this.cep = cep;
         this.rua = rua;
@@ -21,4 +19,4 @@ class EnderecoModel {
         this.estado = estado;
     }
 }
-exports.EnderecoModel = EnderecoModel;
+exports.EnderecoRequestDto = EnderecoRequestDto;

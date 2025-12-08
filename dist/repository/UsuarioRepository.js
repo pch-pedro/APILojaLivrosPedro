@@ -27,7 +27,7 @@ class UsuarioRepository {
             throw err;
         }
     }
-    async insertUsuario(nome, email, senha_hash, telefone, tipo_usuario) {
+    async inserirUsuario(nome, email, senha_hash, telefone, tipo_usuario) {
         const query = `
             INSERT INTO Usuario 
             (nome, email, senha_hash, telefone, tipo_usuario) 

@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuarioService = void 0;
-const bcrypt = __importStar(require("bcryptjs")); // Certifique-se de instalar: npm install bcryptjs @types/bcryptjs
+const bcrypt = __importStar(require("bcryptjs"));
 const UsuarioRepository_1 = require("../repository/UsuarioRepository");
 const UsuarioModel_1 = require("../model/entity/UsuarioModel");
 const UsuarioResponseDto_1 = require("../model/dto/UsuarioResponseDto");
@@ -44,7 +44,7 @@ class UsuarioService {
     constructor(usuarioRepository = new UsuarioRepository_1.UsuarioRepository()) {
         this.usuarioRepository = usuarioRepository;
     }
-    validateRequest(data, isUpdate = false) {
+    validarRequest(data, isUpdate = false) {
         const { nome, email, senha_hash, telefone } = data;
         if (!isUpdate) {
             if (!nome || !email || !senha_hash || !telefone) {
@@ -64,8 +64,8 @@ class UsuarioService {
             }
         }
     }
-    async createUsuario(data) {
-        this.validateRequest(data);
+    async criarUsuario(data) {
+        this.validarRequest(data);
         const existingUser = await this.usuarioRepository.buscarUsuarioPorEmail(data.email);
         if (existingUser) {
             throw new errors_1.ConflictError('O email já está cadastrado no sistema.');
@@ -73,19 +73,19 @@ class UsuarioService {
         const salt = await bcrypt.genSalt(10);
         const senha_hash = await bcrypt.hash(data.senha_hash, salt);
         const tipo_usuario = data.tipo_usuario || UsuarioModel_1.TipoUsuario.CLIENTE;
-        const createdEntity = await this.usuarioRepository.insertUsuario(data.nome, data.email, senha_hash, data.telefone, tipo_usuario);
+        const createdEntity = await this.usuarioRepository.inserirUsuario(data.nome, data.email, senha_hash, data.telefone, tipo_usuario);
         const { senha_hash: _, ...safeUser } = createdEntity;
         return new UsuarioResponseDto_1.UsuarioResponseDto(createdEntity);
     }
-    async getUsuarioById(id) {
+    async buscarUsuarioPorId(id) {
         const entity = await this.usuarioRepository.buscarUsuarioPorId(id);
         if (!entity) {
             throw new errors_1.NotFoundError(`Usuário com ID ${id} não encontrado.`);
         }
         return new UsuarioResponseDto_1.UsuarioResponseDto(entity);
     }
-    async updateUsuario(id, data) {
-        this.validateRequest(data, true);
+    async atualizarUsuario(id, data) {
+        this.validarRequest(data, true);
         const existingEntity = await this.usuarioRepository.buscarUsuarioPorId(id);
         if (!existingEntity) {
             throw new errors_1.NotFoundError(`Usuário com ID ${id} não encontrado para atualização.`);
@@ -103,7 +103,7 @@ class UsuarioService {
         }
         return new UsuarioResponseDto_1.UsuarioResponseDto(resultEntity);
     }
-    async deleteUsuario(id) {
+    async removerUsuario(id) {
         const existingEntity = await this.usuarioRepository.buscarUsuarioPorId(id);
         if (!existingEntity) {
             throw new errors_1.NotFoundError(`Usuário com ID ${id} não encontrado para remoção.`);
