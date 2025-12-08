@@ -1,6 +1,7 @@
 import express, { type Express } from 'express';
 import livroRoutes from './routes/livroRoutes.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
+import categoriaRoutes from './routes/categoriaRoutes.js'
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,7 @@ app.get('/health', (req, res) => {
 // Rotas
 app.use('/livros', livroRoutes);
 app.use('/usuarios', usuarioRoutes);
+app.use('/categorias', categoriaRoutes);
 
 // 404 para rotas não encontradas
 app.use((req, res) => {
