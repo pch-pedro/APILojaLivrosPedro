@@ -1,11 +1,13 @@
+import { TipoUsuario } from "../entity/UsuarioModel";
+
 export class UsuarioRequestDto{
     nome: string;
     email: string;
     senha_hash: string;
     telefone: string;
-    tipo_usuario: "CLIENTE" | "ADMIN";
+    tipo_usuario: TipoUsuario;
 
-    constructor(nome: string, email: string, senha_hash: string, telefone: string, tipo_usuario: "CLIENTE" | "ADMIN"){
+    constructor(nome: string, email: string, senha_hash: string, telefone: string, tipo_usuario: TipoUsuario){
         this.nome = nome,
         this.email = email,
         this.senha_hash = senha_hash,
