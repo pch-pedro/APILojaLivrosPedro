@@ -4,11 +4,12 @@ import { Pool } from 'mysql2';
 const dbConfig = {
     host: 'localhost',
     port: 3306,
-    user: 'brunaserra',
-    password: 'BsA@!011722'
+    user: 'root',
+    password: 'root',
+    database: 'lectus_bd'
 };
 
-const dbName = 'livraria';
+const dbName = 'lectus_bd';
 
 let pool: Pool | null = null;
 

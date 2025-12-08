@@ -33,32 +33,73 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mysqlConnection = void 0;
 exports.executarComandoSQL = executarComandoSQL;
+exports.fecharConexao = fecharConexao;
 const mysql = __importStar(require("mysql2"));
 const dbConfig = {
     host: 'localhost',
     port: 3306,
-    user: 'brunaserra',
-    password: 'BsA@!011722',
-    database: 'livraria'
+    user: 'root',
+    password: 'root',
+    database: 'lectus_bd'
 };
-exports.mysqlConnection = mysql.createConnection(dbConfig);
-exports.mysqlConnection.connect((err) => {
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados:', err);
-        throw err;
-    }
-    console.log('Conexão bem-sucedida com o banco de dados MySQL');
+const dbName = 'lectus_bd';
+let pool = null;
+// Promise que aguarda o pool estar pronto (após garantir que o database existe)
+const poolReady = new Promise((resolve, reject) => {
+    const tmpConn = mysql.createConnection(dbConfig);
+    tmpConn.connect((err) => {
+        if (err) {
+            console.error('Erro ao conectar para criar database:', err);
+            return reject(err);
+        }
+        // Cria o database se não existir
+        tmpConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`, (err) => {
+            if (err) {
+                tmpConn.end();
+                console.error('Erro ao criar/garantir database:', err);
+                return reject(err);
+            }
+            tmpConn.end();
+            // Agora cria o pool apontando para o database específico
+            const poolConfig = {
+                ...dbConfig,
+                database: dbName,
+                waitForConnections: true,
+                connectionLimit: 10,
+                queueLimit: 0
+            };
+            pool = mysql.createPool(poolConfig);
+            console.log(`Pool MySQL criado e database "${dbName}" assegurado.`);
+            resolve();
+        });
+    });
 });
-function executarComandoSQL(query, valores) {
+async function executarComandoSQL(query, valores = []) {
+    await poolReady;
     return new Promise((resolve, reject) => {
-        exports.mysqlConnection.query(query, valores, (err, resultado) => {
+        if (!pool) {
+            return reject(new Error('Pool MySQL não inicializado'));
+        }
+        pool.query(query, valores, (err, resultado) => {
             if (err) {
                 console.error('Erro ao executar a query.', err);
-                reject(err);
+                return reject(err);
             }
             resolve(resultado);
+        });
+    });
+}
+async function fecharConexao() {
+    await poolReady;
+    return new Promise((resolve, reject) => {
+        if (!pool)
+            return resolve();
+        pool.end((err) => {
+            if (err)
+                return reject(err);
+            console.log('Conexão com o pool MySQL fechada.');
+            resolve();
         });
     });
 }
