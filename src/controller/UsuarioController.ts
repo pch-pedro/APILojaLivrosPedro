@@ -19,7 +19,7 @@ export class UsuarioController extends Controller {
         @Res() success: TsoaResponse<201, BasicResponseDto>
     ): Promise<void> {
         try {
-            const newUsuarioDto = await usuarioService.createUsuario(dto);
+            const newUsuarioDto = await usuarioService.criarUsuario(dto);
             return success(201, new BasicResponseDto("Usuário cadastrado com sucesso!", newUsuarioDto));
             
         } catch (err: any) {
@@ -37,10 +37,10 @@ export class UsuarioController extends Controller {
     public async buscarUsuario(
         @Path() id: number,
         @Res() fail: UsuarioFailResponse,
-        @Res() success: TsoaResponse<200, BasicResponseDto> // Status de sucesso esperado
+        @Res() success: TsoaResponse<200, BasicResponseDto> 
     ): Promise<void> {
         try {
-            const userDto = await usuarioService.getUsuarioById(id);
+            const userDto = await usuarioService.buscarUsuarioPorId(id);
             return success(200, new BasicResponseDto("Usuário encontrado com sucesso!", userDto));
         } catch (err: any) {
             if (err instanceof NotFoundError) {
@@ -58,7 +58,7 @@ export class UsuarioController extends Controller {
         @Res() success: TsoaResponse<200, BasicResponseDto>
     ): Promise<void> {
         try {
-            const updatedUserDto = await usuarioService.updateUsuario(id, dto);
+            const updatedUserDto = await usuarioService.atualizarUsuario(id, dto);
             return success(200, new BasicResponseDto("Usuário atualizado com sucesso!", updatedUserDto));
         } catch (err: any) {
             if (err instanceof ValidationError) {
@@ -78,7 +78,7 @@ export class UsuarioController extends Controller {
         @Res() success: TsoaResponse<200, BasicResponseDto>
     ): Promise<void> {
         try {
-            await usuarioService.deleteUsuario(id);
+            await usuarioService.removerUsuario(id);
             return success(200, new BasicResponseDto("Usuário removido com sucesso.", undefined));
         } catch (err: any) {
             if (err instanceof NotFoundError) {
