@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcryptjs'; // Certifique-se de instalar: npm install bcryptjs @types/bcryptjs
+import * as bcrypt from 'bcryptjs';
 import { UsuarioRepository } from '../repository/UsuarioRepository';
 import { UsuarioModel, TipoUsuario } from '../model/entity/UsuarioModel';
 import { UsuarioRequestDto } from '../model/dto/UsuarioRequestDto';
@@ -15,7 +15,7 @@ export class UsuarioService {
     }
     
 
-    private validateRequest(data: UsuarioRequestDto | UsuarioUpdateRequestDto, isUpdate: boolean = false): void {
+    private validarRequest(data: UsuarioRequestDto | UsuarioUpdateRequestDto, isUpdate: boolean = false): void {
         const { nome, email, senha_hash, telefone } = data;
         
         if (!isUpdate) {
@@ -39,8 +39,8 @@ export class UsuarioService {
         }
     }
 
-    async createUsuario(data: UsuarioRequestDto): Promise<UsuarioResponseDto> {
-        this.validateRequest(data);
+    async criarUsuario(data: UsuarioRequestDto): Promise<UsuarioResponseDto> {
+        this.validarRequest(data);
 
         const existingUser = await this.usuarioRepository.buscarUsuarioPorEmail(data.email);
         if (existingUser) {
@@ -52,7 +52,7 @@ export class UsuarioService {
 
         const tipo_usuario = data.tipo_usuario || TipoUsuario.CLIENTE; 
         
-        const createdEntity = await this.usuarioRepository.insertUsuario(
+        const createdEntity = await this.usuarioRepository.inserirUsuario(
             data.nome, 
             data.email, 
             senha_hash, 
@@ -66,7 +66,7 @@ export class UsuarioService {
     }
 
 
-    async getUsuarioById(id: number): Promise<UsuarioResponseDto> {
+    async buscarUsuarioPorId(id: number): Promise<UsuarioResponseDto> {
         const entity = await this.usuarioRepository.buscarUsuarioPorId(id);
 
         if (!entity) {
@@ -76,8 +76,8 @@ export class UsuarioService {
         return new UsuarioResponseDto(entity);
     }
 
-    async updateUsuario(id: number, data: UsuarioUpdateRequestDto): Promise<UsuarioResponseDto> {
-        this.validateRequest(data, true);
+    async atualizarUsuario(id: number, data: UsuarioUpdateRequestDto): Promise<UsuarioResponseDto> {
+        this.validarRequest(data, true);
 
         const existingEntity = await this.usuarioRepository.buscarUsuarioPorId(id);
         if (!existingEntity) {
@@ -108,7 +108,7 @@ export class UsuarioService {
         return new UsuarioResponseDto(resultEntity);
     }
 
-    async deleteUsuario(id: number): Promise<void> {
+    async removerUsuario(id: number): Promise<void> {
         const existingEntity = await this.usuarioRepository.buscarUsuarioPorId(id);
         if (!existingEntity) {
             throw new NotFoundError(`Usuário com ID ${id} não encontrado para remoção.`);

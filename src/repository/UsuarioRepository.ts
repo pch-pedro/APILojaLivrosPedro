@@ -27,7 +27,7 @@ export class UsuarioRepository{
         }
     }
 
-    async insertUsuario(
+    async inserirUsuario(
         nome: string,
         email: string,
         senha_hash: string,
