@@ -139,13 +139,13 @@ export class LivroRepository{
     }
 
     async removeLivroPorId(id: number): Promise<LivroModel | null>{
-       const livro = await this.filtraLivroPorId(id);
-       if(!livro){
+        const livro = await this.filtraLivroPorId(id);
+        if(!livro){
             return null;
-       }
+        }
 
-    await executarComandoSQL("DELETE FROM Livro where id = ?", [id]);
-       return livro;
+        await executarComandoSQL("DELETE FROM Livro where id = ?", [id]);
+        return livro;
     }
 
     async atualizarLivroPorId(id: number, novosDados: any): Promise<LivroModel | null>{

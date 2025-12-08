@@ -1,25 +1,17 @@
 export class CategoriaModel{
 
-    static proximoId: number = 1;
-
-    id: number;
-    titulo: string;
+    id?: number;
     nome: string;
 
-    constructor(titulo: string, nome: string){
-        this.id = CategoriaModel.proximoId++;
-        this.titulo = titulo;
+    constructor(nome: string, id?: number){
+        this.id = id;
         this.nome = nome;
     }
 
     //GETTERS
 
-    getId(): number{
+    getId(): number | undefined{
         return this.id;
-    }
-
-    getTitulo(): string{
-        return this.titulo;
     }
 
     getNome(): string{
@@ -27,10 +19,6 @@ export class CategoriaModel{
     }
 
     //SETTERS
-
-    setTitulo(titulo: string): void{
-        this.titulo = titulo;
-    }
 
     setNome(nome: string): void{
         this.nome = nome;
