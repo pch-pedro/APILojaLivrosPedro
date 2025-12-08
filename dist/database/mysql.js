@@ -1,68 +1,64 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.executarComandoSQL = executarComandoSQL;
-exports.fecharConexao = fecharConexao;
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const mysql2_1 = __importDefault(require("mysql2"));
-const dbName = process.env.MYSQLDATABASE || 'lectus_db';
-const dbConfig = {
-    host: process.env.MYSQLHOST || 'localhost',
-    port: Number(process.env.MYSQLPORT || 3306),
-    user: process.env.MYSQLUSER || 'root',
-    password: process.env.MYSQLPASSWORD || 'root'
-};
-// Config para o pool já com database
-const poolConfig = {
-    ...dbConfig,
-    database: dbName,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-};
-let pool = null;
-// Promise que indica quando o pool estiver pronto (após criar o DB se necessário)
-const poolReady = new Promise((resolve, reject) => {
-    const tmpConn = mysql2_1.default.createConnection(dbConfig);
-    // cria o database caso não exista
-    tmpConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`, (err) => {
-        tmpConn.end();
-        if (err) {
-            console.error('Erro ao garantir database:', err);
-            return reject(err);
-        }
-        // agora cria o pool apontando para o database
-        pool = mysql2_1.default.createPool(poolConfig);
-        console.log('Pool MySQL criado e database assegurado:', dbName);
-        resolve();
-    });
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
 });
-async function executarComandoSQL(query, valores = []) {
-    await poolReady;
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.mysqlConnection = void 0;
+exports.executarComandoSQL = executarComandoSQL;
+const mysql = __importStar(require("mysql2"));
+const dbConfig = {
+    host: 'localhost',
+    port: 3306,
+    user: 'brunaserra',
+    password: 'BsA@!011722',
+    database: 'livraria'
+};
+exports.mysqlConnection = mysql.createConnection(dbConfig);
+exports.mysqlConnection.connect((err) => {
+    if (err) {
+        console.error('Erro ao conectar ao banco de dados:', err);
+        throw err;
+    }
+    console.log('Conexão bem-sucedida com o banco de dados MySQL');
+});
+function executarComandoSQL(query, valores) {
     return new Promise((resolve, reject) => {
-        if (!pool)
-            return reject(new Error('Pool MySQL não inicializado'));
-        pool.query(query, valores, (err, resultado) => {
+        exports.mysqlConnection.query(query, valores, (err, resultado) => {
             if (err) {
-                console.error('Erro ao executar a query. ', err);
-                return reject(err);
+                console.error('Erro ao executar a query.', err);
+                reject(err);
             }
             resolve(resultado);
-        });
-    });
-}
-async function fecharConexao() {
-    await poolReady;
-    return new Promise((resolve, reject) => {
-        if (!pool)
-            return resolve();
-        pool.end((err) => {
-            if (err)
-                return reject(err);
-            resolve();
         });
     });
 }

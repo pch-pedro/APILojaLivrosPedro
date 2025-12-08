@@ -1,21 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsuarioView = void 0;
-class UsuarioView {
-    static formatarUsuario(usuario) {
+exports.CategoriaView = void 0;
+class CategoriaView {
+    static formatarCategoria(categoria) {
         return {
-            id: usuario.id,
-            nome: usuario.nome,
-            email: usuario.email,
-            telefone: usuario.telefone,
-            tipo_usuario: usuario.tipo_usuario
-            // não retornar senha_hash
+            id: categoria.getId(),
+            nome: categoria.getNome()
         };
     }
-    static formatarListaUsuarios(usuarios) {
+    static formatarListaCategoria(categorias) {
+        const categoriasFormatadas = [];
+        for (let i = 0; i < categorias.length; i++) {
+            categoriasFormatadas.push(this.formatarCategoria(categorias[i]));
+        }
         return {
-            total: usuarios.length,
-            usuarios: usuarios.map(usuario => this.formatarUsuario(usuario))
+            total: categorias.length,
+            categorias: categoriasFormatadas
         };
     }
     static formatarErro(mensagem, statusCode = 400) {
@@ -36,4 +36,4 @@ class UsuarioView {
         };
     }
 }
-exports.UsuarioView = UsuarioView;
+exports.CategoriaView = CategoriaView;
