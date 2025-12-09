@@ -56,6 +56,72 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"FormaPagamento": {
+				"enum": [
+					"PIX",
+					"CARTAO_CREDITO",
+					"BOLETO",
+					"TRANSFERENCIA"
+				],
+				"type": "string"
+			},
+			"ItemPedidoRequestDto": {
+				"properties": {
+					"livro_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantidade": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"livro_id",
+					"quantidade"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PedidoRequestDto": {
+				"properties": {
+					"usuario_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"endereco_entrega_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"forma_pagamento": {
+						"$ref": "#/components/schemas/FormaPagamento"
+					},
+					"itens": {
+						"items": {
+							"$ref": "#/components/schemas/ItemPedidoRequestDto"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"usuario_id",
+					"endereco_entrega_id",
+					"forma_pagamento",
+					"itens"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PedidoStatus": {
+				"enum": [
+					"PENDENTE",
+					"PROCESSANDO",
+					"ENVIADO",
+					"ENTREGUE",
+					"CANCELADO"
+				],
+				"type": "string"
+			},
 			"LivroRequestDto": {
 				"properties": {
 					"categoria_id": {
@@ -504,6 +570,324 @@
 						}
 					}
 				]
+			}
+		},
+		"/pedidos": {
+			"post": {
+				"operationId": "CriarPedido",
+				"responses": {
+					"201": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pedido"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PedidoRequestDto"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/pedidos/{id}": {
+			"get": {
+				"operationId": "BuscarPedidoPorId",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pedido"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/pedidos/usuario/{usuarioId}": {
+			"get": {
+				"operationId": "ListarPedidosPorUsuario",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pedido"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "usuarioId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/pedidos/{id}/status": {
+			"put": {
+				"operationId": "AtualizarStatusPedido",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasicResponseDto"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pedido"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"status": {
+										"$ref": "#/components/schemas/PedidoStatus"
+									}
+								},
+								"required": [
+									"status"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/livros": {

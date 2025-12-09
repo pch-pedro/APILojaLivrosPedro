@@ -1,18 +1,36 @@
 import { executarComandoSQL } from "../database/mysql";
 import { LivroModel } from "../model/entity/LivroModel";
+import { RowDataPacket, OkPacket } from 'mysql2/promise';
 
 export class LivroRepository{
     private static instance: LivroRepository;
 
-    private constructor() {
-        this.criarTable();
-    }
+    private constructor() {}
 
-    public static getInstance(): LivroRepository{
+    public static async getInstance(): Promise<LivroRepository>{
         if(!this.instance){
             this.instance = new LivroRepository();
+            await this.instance.criarTable();
         }
         return this.instance;
+    }
+
+
+    private mapToModel(row: RowDataPacket): LivroModel {
+        return new LivroModel(
+            row.categoria_id, 
+            row.titulo,
+            row.autor, 
+            row.isbn,
+            row.preco,
+            row.estoque,
+            row.sinopse,
+            row.imageURL,
+            row.editora,
+            row.data_publicacao,
+            row.promocao,
+            row.id
+        );
     }
 
     private async criarTable(){
@@ -133,6 +151,20 @@ export class LivroRepository{
         return null;
     }
 
+    async filtrarLivrosPorIds(ids: number[]): Promise<LivroModel[]> {
+        if (ids.length === 0) return [];
+        
+        const query = `
+            SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, imageURL, editora, data_publicacao, promocao 
+            FROM Livro 
+            WHERE id IN (?)
+        `;
+        
+        const [rows] = await executarComandoSQL(query, [ids]) as [RowDataPacket[]];
+
+        return rows.map(this.mapToModel);
+    }
+
     async validacaoLivroPorId(id: number): Promise<boolean> {
         const livro = await this.filtraLivroPorId(id);
         return livro !== null;
@@ -232,6 +264,17 @@ export class LivroRepository{
         console.log(resultado);
 
         return await this.filtraLivroPorId(id);
+    }
+
+    async atualizarEstoque(id: number, delta: number): Promise<boolean> {
+        const query = `
+            UPDATE Livro
+            SET estoque = estoque + ?
+            WHERE id = ?
+        `;
+        const resultado: OkPacket = await executarComandoSQL(query, [delta, id]) as OkPacket;
+        
+        return resultado.affectedRows > 0;
     }
 
     async listarLivros(): Promise<LivroModel[]>{

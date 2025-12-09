@@ -9,6 +9,7 @@ import { LivroRepository } from '../repository/LivroRepository';
 import { PedidoStatus } from '../enums/PedidoStatus';
 import { NotFoundError, ValidationError, ConflictError } from '../utils/errors'; 
 import { FormaPagamento } from '../enums/FormaPagamento';
+import { LivroModel } from '../model/entity/LivroModel';
 
 
 type PedidoCreateData = Omit<PedidoModel, 'id' | 'itens'>; 
@@ -58,69 +59,68 @@ export class PedidoService {
     }
     
     async criarPedido(data: PedidoRequestDto): Promise<PedidoResponseDto> {
-        this.validarRequest(data);
-        
-        const usuarioExists = await this.usuarioRepository.buscarUsuarioPorId(data.usuario_id);
-        if (!usuarioExists) {
-            throw new NotFoundError(`Usuário com ID ${data.usuario_id} não encontrado.`);
-        }
-        
-        const enderecoExists = await this.enderecoRepository.buscarPorId(data.endereco_entrega_id);
-        if (!enderecoExists) {
-            throw new NotFoundError(`Endereço com ID ${data.endereco_entrega_id} não encontrado.`);
-        }
-        if (enderecoExists.usuario_id !== data.usuario_id) {
-            throw new ConflictError('O endereço de entrega não pertence ao usuário especificado.');
-        }
-        
-        const livroIds = data.itens.map(item => item.livro_id);
-        const livrosNoEstoque = await this.livroRepository.validacaoLivroPorId(livroIds); 
-
-        let valorTotal = 0;
-        const itensParaInserir: ItemPedidoCreateData[] = [];
-
-        for (const itemRequest of data.itens) {
-            const livro = livrosNoEstoque.find(l => l.id === itemRequest.livro_id);
-            
-            if (!livro) { throw new NotFoundError(`Livro com ID ${itemRequest.livro_id} não encontrado no catálogo.`); }
-            if (livro.estoque < itemRequest.quantidade) {
-                throw new ConflictError(`Estoque insuficiente para o livro ${livro.titulo}. Estoque: ${livro.estoque}, Pedido: ${itemRequest.quantidade}.`);
-            }
-
-            const precoUnitario = livro.preco; 
-            valorTotal += precoUnitario * itemRequest.quantidade;
-
-            itensParaInserir.push({
-                pedido_id: 0, 
-                livro_id: livro.id as number,
-                quantidade: itemRequest.quantidade,
-                preco_unitario_pago: precoUnitario,
-            });
-        }
-        
-        const pedidoHeaderData: PedidoCreateData = {
-            usuario_id: data.usuario_id,
-            endereco_entrega_id: data.endereco_entrega_id,
-            data_pedido: new Date(),
-            valor_total: valorTotal,
-            status_pedido: PedidoStatus.PENDENTE, 
-            forma_pagamento: data.forma_pagamento, 
-        };
-        
-        for (const item of data.itens) {
-            await this.livroRepository.atualizarEstoque(item.livro_id, -item.quantidade);
-        }
-
-        const createdEntity = await this.pedidoRepository.inserirPedido(pedidoHeaderData, itensParaInserir);
-        
-        const fullPedido = await this.pedidoRepository.buscarPorId(createdEntity.id as number);
-
-        if (!fullPedido) {
-            throw new Error("Falha de integridade: Pedido inserido não pôde ser recuperado.");
-        }
-
-        return this.mapToDto(fullPedido);
+    this.validarRequest(data);
+    
+    const usuarioExists = await this.usuarioRepository.buscarUsuarioPorId(data.usuario_id);
+    if (!usuarioExists) {
+        throw new NotFoundError(`Usuário com ID ${data.usuario_id} não encontrado.`);
     }
+  
+    const enderecoExists = await this.enderecoRepository.buscarPorId(data.endereco_entrega_id);
+    if (!enderecoExists) {
+        throw new NotFoundError(`Endereço com ID ${data.endereco_entrega_id} não encontrado.`);
+    }
+    if (enderecoExists.usuario_id !== data.usuario_id) {
+        throw new ConflictError('O endereço de entrega não pertence ao usuário especificado.');
+    }
+    
+    const livroIds = data.itens.map(item => item.livro_id);
+    const livrosNoEstoque = await this.livroRepository.filtrarLivrosPorIds(livroIds); 
+
+    let valorTotal = 0;
+    const itensParaInserir: ItemPedidoCreateData[] = [];
+
+    for (const itemRequest of data.itens) {
+        const livro = livrosNoEstoque.find(l => l.id === itemRequest.livro_id);
+        
+        if (!livro) { throw new NotFoundError(`Livro com ID ${itemRequest.livro_id} não encontrado no catálogo.`); }
+        if (livro.estoque < itemRequest.quantidade) {
+            throw new ConflictError(`Estoque insuficiente para o livro ${livro.titulo}. Estoque: ${livro.estoque}, Pedido: ${itemRequest.quantidade}.`);
+        }
+
+        const precoUnitario = livro.preco; 
+        valorTotal += precoUnitario * itemRequest.quantidade;
+
+        itensParaInserir.push({
+            livro_id: livro.id as number,
+            quantidade: itemRequest.quantidade,
+            preco_unitario_pago: precoUnitario,
+        } as ItemPedidoCreateData); 
+    }
+    
+    const pedidoHeaderData: PedidoCreateData = {
+        usuario_id: data.usuario_id,
+        endereco_entrega_id: data.endereco_entrega_id,
+        data_pedido: new Date(),
+        valor_total: valorTotal,
+        status_pedido: PedidoStatus.PENDENTE, 
+        forma_pagamento: data.forma_pagamento, 
+    };
+    
+    for (const item of data.itens) {
+        await this.livroRepository.atualizarEstoque(item.livro_id, -item.quantidade);
+    }
+
+    const createdEntity = await this.pedidoRepository.inserirPedido(pedidoHeaderData, itensParaInserir);
+    
+    const fullPedido = await this.pedidoRepository.buscarPorId(createdEntity.id as number); 
+
+    if (!fullPedido) {
+        throw new Error("Falha de integridade: Pedido inserido não pôde ser recuperado.");
+    }
+
+    return this.mapToDto(fullPedido);
+}
 
     async buscarPedidoPorId(id: number): Promise<PedidoResponseDto> {
         if (!id || id <= 0) throw new ValidationError('ID de pedido inválido.');

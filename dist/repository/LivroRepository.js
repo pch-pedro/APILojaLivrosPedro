@@ -5,14 +5,16 @@ const mysql_1 = require("../database/mysql");
 const LivroModel_1 = require("../model/entity/LivroModel");
 class LivroRepository {
     static instance;
-    constructor() {
-        this.criarTable();
-    }
-    static getInstance() {
+    constructor() { }
+    static async getInstance() {
         if (!this.instance) {
             this.instance = new LivroRepository();
+            await this.instance.criarTable();
         }
         return this.instance;
+    }
+    mapToModel(row) {
+        return new LivroModel_1.LivroModel(row.categoria_id, row.titulo, row.autor, row.isbn, row.preco, row.estoque, row.sinopse, row.imageURL, row.editora, row.data_publicacao, row.promocao, row.id);
     }
     async criarTable() {
         const query = `CREATE TABLE IF NOT EXISTS Livro(
@@ -77,6 +79,17 @@ class LivroRepository {
             return new LivroModel_1.LivroModel(user.categoria_id, user.titulo, user.autor, user.isbn, user.preco, user.estoque, user.sinopse, user.imageURL, user.editora, user.data_publicacao, user.promocao, user.id);
         }
         return null;
+    }
+    async filtrarLivrosPorIds(ids) {
+        if (ids.length === 0)
+            return [];
+        const query = `
+            SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, imageURL, editora, data_publicacao, promocao 
+            FROM Livro 
+            WHERE id IN (?)
+        `;
+        const [rows] = await (0, mysql_1.executarComandoSQL)(query, [ids]);
+        return rows.map(this.mapToModel);
     }
     async validacaoLivroPorId(id) {
         const livro = await this.filtraLivroPorId(id);
@@ -156,6 +169,15 @@ class LivroRepository {
         const resultado = await (0, mysql_1.executarComandoSQL)(sql, valores);
         console.log(resultado);
         return await this.filtraLivroPorId(id);
+    }
+    async atualizarEstoque(id, delta) {
+        const query = `
+            UPDATE Livro
+            SET estoque = estoque + ?
+            WHERE id = ?
+        `;
+        const resultado = await (0, mysql_1.executarComandoSQL)(query, [delta, id]);
+        return resultado.affectedRows > 0;
     }
     async listarLivros() {
         //Validação Adicionada: Retornando os livros por ordem alfabética e apenas se seu estoque for maior que zero.

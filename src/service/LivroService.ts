@@ -1,24 +1,45 @@
 import { LivroModel } from "../model/entity/LivroModel";
 import { LivroRepository } from "../repository/LivroRepository";
+import { UsuarioRepository } from "../repository/UsuarioRepository";
+import { NotFoundError, ConflictError, ValidationError } from '../utils/errors'; 
 
-export class LivroService{
-    private livroRepository = LivroRepository.getInstance();
+type LivroRequestDto = any; 
+type LivroUpdateDto = any; 
 
-    async novoLivro(data: any): Promise<LivroModel>{
+export class LivroService {
+    private readonly livroRepository: Promise<LivroRepository>; 
+    private readonly usuarioRepository: Promise<UsuarioRepository>;
+    
+    constructor(
+        livroRepository: Promise<LivroRepository> = LivroRepository.getInstance(),
+        usuarioRepository: Promise<UsuarioRepository> = UsuarioRepository.getInstance()
+    ) {
+        this.livroRepository = livroRepository; 
+        this.usuarioRepository = usuarioRepository; 
+    }
+
+
+    private async getLivroRepository(): Promise<LivroRepository> {
+        return await this.livroRepository;
+    }
+
+    async novoLivro(data: LivroRequestDto): Promise<LivroModel>{
+
+        const repo = await this.getLivroRepository();
         const isbn = data.isbn;
-        if(!isbn || !this.livroRepository.validacaoISBN(isbn)){
-            throw new Error("É necessário 13 dígitos válidos de ISBN para cadastrar um livro!");
+
+        if(!isbn || !repo.validacaoISBN(isbn)){
+            throw new ValidationError("É necessário 13 dígitos válidos de ISBN para cadastrar um livro!");
         }
 
-        if(await this.livroRepository.validacaoLivroPorISBN(isbn)){
-            throw new Error("Este livro já é cadastrado!");
+        if(await repo.validacaoLivroPorISBN(isbn)){
+            throw new ConflictError("Este livro já é cadastrado!");
         }
 
-        // construir modelo
         const livro = new LivroModel(
             data.categoria_id,
             data.titulo,
-            data.autor,            
+            data.autor,            
             data.isbn,
             data.preco,
             data.estoque,
@@ -29,71 +50,75 @@ export class LivroService{
             data.promocao
         );
 
-        return await this.livroRepository.insereLivro(livro);
+        return await repo.insereLivro(livro);
     }
 
-    async filtrarLivro(data: any): Promise<LivroModel | null>{
+    async filtrarLivro(data: { id: number }): Promise<LivroModel>{
+        const repo = await this.getLivroRepository();
         const id = data.id;
-        const livro = await this.livroRepository.filtraLivroPorId(id);
+        
+        const livro = await repo.filtraLivroPorId(id);
 
         if(livro === null){
-            throw new Error("Id não encontrado no sistema!");
+            throw new NotFoundError("Id não encontrado no sistema!");
         }
 
         return livro;
     }
 
     async filtrarLivroPorISBN(isbn: string): Promise<LivroModel | null> {
-        const livro = await this.livroRepository.filtraLivroPorISBN(isbn);
+        const repo = await this.getLivroRepository();
+        const livro = await repo.filtraLivroPorISBN(isbn); 
         if (!livro) {
-            throw new Error('ISBN não encontrado no sistema!');
+            throw new NotFoundError('ISBN não encontrado no sistema!');
         }
         return livro;
     }
 
-    //Função Adicionada: Filtrar Livro por ISBN
-    async filtrarLivroISBN(data: any): Promise<LivroModel>{
+    async filtrarLivroISBN(data: { isbn: string }): Promise<LivroModel>{
+        const repo = await this.getLivroRepository();
         const isbn = data.isbn;
 
-        if(this.livroRepository.validacaoISBN(isbn) === false){
-            throw new Error("O ISBN informado eh invalido. Eh necessário 13 caracteres");
+        if(repo.validacaoISBN(isbn) === false){
+            throw new ValidationError("O ISBN informado é inválido. É necessário 13 caracteres");
         }
 
-        const livro = await this.livroRepository.filtraLivroPorISBN(isbn);
+        const livro = await repo.filtraLivroPorISBN(isbn);
 
         if(livro === null){
-            throw new Error("Livro com o ISBN:" + isbn + "nao encontrado no sistema");
+            throw new NotFoundError("Livro com o ISBN:" + isbn + " não encontrado no sistema");
         }
 
         return livro;
     }
 
     async removeLivro(id: number): Promise<LivroModel>{
-        const livroRemovido = await this.livroRepository.removeLivroPorId(id);
+        const repo = await this.getLivroRepository();
+        const livroRemovido = await repo.removeLivroPorId(id); 
+        
         if(!livroRemovido){
-            throw new Error("Livro não encontrado para remoção!");
+            throw new NotFoundError("Livro não encontrado para remoção!");
         }
         return livroRemovido;
     }
 
     async listarLivros(): Promise<LivroModel[]>{
-        return await this.livroRepository.listarLivros();
+        const repo = await this.getLivroRepository();
+        return await repo.listarLivros();
     }
 
-    async atualizaLivro(data: any): Promise<LivroModel | null>{
+    async atualizaLivro(data: { id: number, novosDados: LivroUpdateDto }): Promise<LivroModel | null>{
+        const repo = await this.getLivroRepository();
         const id = data.id;
         const novosDados = data.novosDados;
 
-        if(novosDados.isbn && this.livroRepository.validacaoISBN(novosDados.isbn) === false){
-            throw new Error("ISBN invalido. Precisa ter 13 digitos");
+        if(novosDados.isbn && repo.validacaoISBN(novosDados.isbn) === false){
+            throw new ValidationError("ISBN inválido. Precisa ter 13 dígitos");
         }
 
         if(novosDados.data_publicacao){
             novosDados.data_publicacao = new Date(novosDados.data_publicacao);
         }
-
-        return await this.livroRepository.atualizarLivroPorId(id, novosDados);
+        return await repo.atualizarLivroPorId(id, novosDados);
     }
 }
-
-export default new LivroService();
