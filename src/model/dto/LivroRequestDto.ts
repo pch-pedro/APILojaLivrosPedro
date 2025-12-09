@@ -1,0 +1,27 @@
+export class LivroRequestDto{ 
+    categoria_id: number;
+    titulo: string; 
+    autor: string; 
+    isbn: string; 
+    preco: number; 
+    estoque: number; 
+    sinopse: string; 
+    imageURL: string; 
+    editora: string; 
+    data_publicacao: Date; 
+    promocao?: boolean; 
+    
+    constructor(categoria_id: number, titulo: string, autor: string, isbn: string, preco: number, estoque: number, sinopse: string, imageURL: string, editora: string, data_publicacao: Date, promocao?: boolean){
+        this.categoria_id = categoria_id; 
+        this.titulo = titulo; 
+        this.autor = autor; 
+        this.isbn = isbn; 
+        this.preco = preco; 
+        this.estoque = estoque; 
+        this.sinopse = sinopse; 
+        this.imageURL = imageURL; 
+        this.editora = editora; 
+        this.data_publicacao = data_publicacao; 
+        this.promocao = promocao ?? false;
+    } 
+}

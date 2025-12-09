@@ -71,16 +71,17 @@ export class LivroRepository{
 
         return new LivroModel(
             livro.categoria_id, 
-                livro.titulo,
-                livro.autor,
-                livro.isbn,
-                livro.preco,
-                livro.estoque,
-                livro.sinopse,
-                livro.imageURL,
-                livro.editora,
-                livro.data_publicacao,
-                livro.promocao
+            livro.titulo,
+            livro.autor,
+            livro.isbn,
+            livro.preco,
+            livro.estoque,
+            livro.sinopse,
+            livro.imageURL,
+            livro.editora,
+            livro.data_publicacao,
+            livro.promocao,
+            resultado.insertId
         );
     }
     
@@ -95,14 +96,16 @@ export class LivroRepository{
             return new LivroModel(
                 row.categoria_id,
                 row.titulo,
+                row.autor,                
                 row.isbn,
                 row.preco,
                 row.estoque,
                 row.sinopse,
                 row.imageURL,
-                row.autor,
                 row.editora,
-                row.data_publicacao
+                row.data_publicacao,
+                row.promocao,
+                row.id
             );
         }
         return null;
@@ -115,14 +118,16 @@ export class LivroRepository{
             return new LivroModel(
                 user.categoria_id,
                 user.titulo,
+                user.autor,                
                 user.isbn,
                 user.preco,
                 user.estoque,
                 user.sinopse,
                 user.imageURL,
-                user.autor,
                 user.editora,
-                user.data_publicacao
+                user.data_publicacao,
+                user.promocao,
+                user.id
             );
         }
         return null;
@@ -167,12 +172,26 @@ export class LivroRepository{
             valores.push(novosDados.autor);
         }
 
+        if(novosDados.isbn){
+            if(this.validacaoISBN(novosDados.isbn) === false){
+                throw new Error("ISBN invalida. Precisa ter 13 digitos");
+            }
+
+            const existente = await this.filtraLivroPorISBN(novosDados.isbn);
+            if(existente && existente.id !== id){
+                throw new Error("Ja existe outro livro com este ISBN");
+            }
+            
+            campos.push("isbn = ?");
+            valores.push(novosDados.isbn)
+        }
+
         if(novosDados.preco){
             campos.push("preco = ?");
             valores.push(novosDados.preco);
         }
 
-        if(novosDados.estoque){
+        if(novosDados.estoque !== undefined){
             campos.push("estoque = ?");
             valores.push(novosDados.estoque);
         }
@@ -197,7 +216,7 @@ export class LivroRepository{
             valores.push(novosDados.data_publicacao);
         }
 
-        if(novosDados.promocao){
+        if(novosDados.promocao !== undefined){
             campos.push("promocao = ?");
             valores.push(novosDados.promocao);
         }
@@ -225,14 +244,16 @@ export class LivroRepository{
                 livros.push(new LivroModel(
                     user.categoria_id,
                     user.titulo,
+                    user.autor,                
                     user.isbn,
                     user.preco,
                     user.estoque,
                     user.sinopse,
                     user.imageURL,
-                    user.autor,
                     user.editora,
-                    user.data_publicacao
+                    user.data_publicacao,
+                    user.promocao,
+                    user.id
                 ));
             }
         }

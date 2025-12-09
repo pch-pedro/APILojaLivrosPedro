@@ -3,11 +3,13 @@ import livroRoutes from './routes/livroRoutes.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
 import categoriaRoutes from './routes/categoriaRoutes.js'
 import { setupSwagger } from './config/swagger.js';
+import cors from 'cors';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

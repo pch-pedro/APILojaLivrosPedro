@@ -1,6 +1,5 @@
-export class LivroModel {
-
-    id?: number;
+export class LivroResponseDto{
+    id: number;
     categoria_id: number;
     titulo: string;
     autor: string;
@@ -11,9 +10,9 @@ export class LivroModel {
     imageURL: string;
     editora: string;
     data_publicacao: Date;
-    promocao? : boolean;
+    promocao: boolean;
 
-    constructor(categoria_id: number, titulo: string, autor: string, isbn: string, preco: number, estoque: number, sinopse: string, imageURL: string, editora: string, data_publicacao: Date, promocao?: boolean, id?: number) {
+    constructor(id: number, categoria_id: number, titulo: string, autor: string, isbn: string, preco: number, estoque: number, sinopse: string, imageURL: string, editora: string, data_publicacao: Date, promocao: boolean = false){
         this.id = id;
         this.categoria_id = categoria_id;
         this.titulo = titulo;
@@ -25,6 +24,6 @@ export class LivroModel {
         this.imageURL = imageURL;
         this.editora = editora;
         this.data_publicacao = data_publicacao;
-        this.promocao = promocao ?? false;
+        this.promocao = promocao;
     }
 }
