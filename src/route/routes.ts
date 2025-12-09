@@ -112,7 +112,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"500","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"201","required":true,"ref":"BasicResponseDto"},
         };
-        app.post('/usuario',
+        app.post('/usuarios',
             ...(fetchMiddlewares<RequestHandler>(UsuarioController)),
             ...(fetchMiddlewares<RequestHandler>(UsuarioController.prototype.criarUsuario)),
 
@@ -144,7 +144,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"500","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.get('/usuario/:id',
+        app.get('/usuarios/:id',
             ...(fetchMiddlewares<RequestHandler>(UsuarioController)),
             ...(fetchMiddlewares<RequestHandler>(UsuarioController.prototype.buscarUsuario)),
 
@@ -177,7 +177,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"500","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.put('/usuario/:id',
+        app.put('/usuarios/:id',
             ...(fetchMiddlewares<RequestHandler>(UsuarioController)),
             ...(fetchMiddlewares<RequestHandler>(UsuarioController.prototype.atualizarUsuario)),
 
@@ -209,7 +209,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"500","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.delete('/usuario/:id',
+        app.delete('/usuarios/:id',
             ...(fetchMiddlewares<RequestHandler>(UsuarioController)),
             ...(fetchMiddlewares<RequestHandler>(UsuarioController.prototype.removerUsuario)),
 
@@ -562,7 +562,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"201","required":true,"ref":"BasicResponseDto"},
         };
-        app.post('/categoria',
+        app.post('/categorias',
             ...(fetchMiddlewares<RequestHandler>(CategoriaController)),
             ...(fetchMiddlewares<RequestHandler>(CategoriaController.prototype.novaCategoria)),
 
@@ -593,7 +593,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"202","required":true,"ref":"BasicResponseDto"},
         };
-        app.get('/categoria',
+        app.get('/categorias',
             ...(fetchMiddlewares<RequestHandler>(CategoriaController)),
             ...(fetchMiddlewares<RequestHandler>(CategoriaController.prototype.listarCategoria)),
 
@@ -625,7 +625,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.get('/categoria/:id',
+        app.get('/categorias/:id',
             ...(fetchMiddlewares<RequestHandler>(CategoriaController)),
             ...(fetchMiddlewares<RequestHandler>(CategoriaController.prototype.listarCategoriaPorId)),
 
@@ -658,7 +658,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.put('/categoria/:id',
+        app.put('/categorias/:id',
             ...(fetchMiddlewares<RequestHandler>(CategoriaController)),
             ...(fetchMiddlewares<RequestHandler>(CategoriaController.prototype.atualizaCategoria)),
 
@@ -690,7 +690,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.delete('/categoria/:id',
+        app.delete('/categorias/:id',
             ...(fetchMiddlewares<RequestHandler>(CategoriaController)),
             ...(fetchMiddlewares<RequestHandler>(CategoriaController.prototype.removeCategoria)),
 

@@ -195,12 +195,12 @@
 		"securitySchemes": {}
 	},
 	"info": {
-		"title": "API Livraria Documentação",
-		"version": "1.0.0",
-		"description": "Documentação da API usando Swagger"
+		"title": "API Livraria Documentação comtestes e etc",
+		"version": "1.0.2",
+		"description": "Documentação da API usando Swagger para realizacao de testes e etc"
 	},
 	"paths": {
-		"/usuario": {
+		"/usuarios": {
 			"post": {
 				"operationId": "CriarUsuario",
 				"responses": {
@@ -275,7 +275,7 @@
 				}
 			}
 		},
-		"/usuario/{id}": {
+		"/usuarios/{id}": {
 			"get": {
 				"operationId": "BuscarUsuario",
 				"responses": {
@@ -1056,7 +1056,7 @@
 				]
 			}
 		},
-		"/categoria": {
+		"/categorias": {
 			"post": {
 				"operationId": "NovaCategoria",
 				"responses": {
@@ -1134,7 +1134,7 @@
 				"parameters": []
 			}
 		},
-		"/categoria/{id}": {
+		"/categorias/{id}": {
 			"get": {
 				"operationId": "ListarCategoriaPorId",
 				"responses": {
@@ -1278,7 +1278,7 @@
 	},
 	"servers": [
 		{
-			"url": "http://localhost:3090/livraria",
+			"url": "http://localhost:3000",
 			"description": "Servidor de Desenvolvimento"
 		}
 	]

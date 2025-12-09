@@ -114,6 +114,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsuarioController.prototype, "removerUsuario", null);
 exports.UsuarioController = UsuarioController = __decorate([
-    (0, tsoa_1.Route)("usuario"),
+    (0, tsoa_1.Route)("usuarios"),
     (0, tsoa_1.Tags)("Usuario")
 ], UsuarioController);

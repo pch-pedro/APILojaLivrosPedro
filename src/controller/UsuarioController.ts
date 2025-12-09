@@ -8,7 +8,7 @@ type UsuarioFailResponse = TsoaResponse<400 | 404 | 409 | 500, BasicResponseDto>
 
 const usuarioService = new UsuarioService();
 
-@Route("usuario")
+@Route("usuarios")
 @Tags("Usuario")
 export class UsuarioController extends Controller {
 

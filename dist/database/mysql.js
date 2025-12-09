@@ -36,14 +36,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.executarComandoSQL = executarComandoSQL;
 exports.fecharConexao = fecharConexao;
 const mysql = __importStar(require("mysql2"));
+const dbName = 'lectus_bd';
+// Config inicial sem database
 const dbConfig = {
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: 'Pedro@2025',
-    database: 'lectus_bd'
+    password: 'Pedro@2025'
 };
-const dbName = 'lectus_bd';
 let pool = null;
 // Promise que aguarda o pool estar pronto (após garantir que o database existe)
 const poolReady = new Promise((resolve, reject) => {
@@ -61,15 +61,14 @@ const poolReady = new Promise((resolve, reject) => {
                 return reject(err);
             }
             tmpConn.end();
-            // Agora cria o pool apontando para o database específico
-            const poolConfig = {
+            // Cria o pool apontando para o database recém-criado
+            pool = mysql.createPool({
                 ...dbConfig,
                 database: dbName,
                 waitForConnections: true,
                 connectionLimit: 10,
                 queueLimit: 0
-            };
-            pool = mysql.createPool(poolConfig);
+            });
             console.log(`Pool MySQL criado e database "${dbName}" assegurado.`);
             resolve();
         });
@@ -78,9 +77,8 @@ const poolReady = new Promise((resolve, reject) => {
 async function executarComandoSQL(query, valores = []) {
     await poolReady;
     return new Promise((resolve, reject) => {
-        if (!pool) {
+        if (!pool)
             return reject(new Error('Pool MySQL não inicializado'));
-        }
         pool.query(query, valores, (err, resultado) => {
             if (err) {
                 console.error('Erro ao executar a query.', err);

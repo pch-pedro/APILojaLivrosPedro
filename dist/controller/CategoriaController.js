@@ -113,6 +113,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CategoriaController.prototype, "removeCategoria", null);
 exports.CategoriaController = CategoriaController = __decorate([
-    (0, tsoa_1.Route)("categoria"),
+    (0, tsoa_1.Route)("categorias"),
     (0, tsoa_1.Tags)("Categoria")
 ], CategoriaController);

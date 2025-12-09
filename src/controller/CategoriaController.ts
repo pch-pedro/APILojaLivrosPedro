@@ -4,7 +4,7 @@ import type { TsoaResponse } from "tsoa";
 import { BasicResponseDto } from "../model/dto/BasicResponseDto";
 import { CategoriaDto } from "../model/dto/CategoriaDto";
 
-@Route("categoria")
+@Route("categorias")
 @Tags("Categoria")
 export class CategoriaController{
     categoriaService = new CategoriaService();
