@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LivroModel = void 0;
-class LivroModel {
-    id;
+exports.LivroRequestDto = void 0;
+class LivroRequestDto {
     categoria_id;
     titulo;
     autor;
@@ -14,8 +13,7 @@ class LivroModel {
     editora;
     data_publicacao;
     promocao;
-    constructor(categoria_id, titulo, autor, isbn, preco, estoque, sinopse, imageURL, editora, data_publicacao, promocao, id) {
-        this.id = id;
+    constructor(categoria_id, titulo, autor, isbn, preco, estoque, sinopse, imageURL, editora, data_publicacao, promocao) {
         this.categoria_id = categoria_id;
         this.titulo = titulo;
         this.autor = autor;
@@ -29,4 +27,4 @@ class LivroModel {
         this.promocao = promocao ?? false;
     }
 }
-exports.LivroModel = LivroModel;
+exports.LivroRequestDto = LivroRequestDto;

@@ -14,7 +14,7 @@ class LivroService {
             throw new Error("Este livro já é cadastrado!");
         }
         // construir modelo
-        const livro = new LivroModel_1.LivroModel(data.categoria_id, data.titulo, data.isbn, data.preco, data.estoque, data.sinopse, data.imageURL, data.autor, data.editora, data.data_publicacao ? new Date(data.data_publicacao) : new Date());
+        const livro = new LivroModel_1.LivroModel(data.categoria_id, data.titulo, data.autor, data.isbn, data.preco, data.estoque, data.sinopse, data.imageURL, data.editora, data.data_publicacao ? new Date(data.data_publicacao) : new Date(), data.promocao);
         return await this.livroRepository.insereLivro(livro);
     }
     async filtrarLivro(data) {
@@ -57,6 +57,12 @@ class LivroService {
     async atualizaLivro(data) {
         const id = data.id;
         const novosDados = data.novosDados;
+        if (novosDados.isbn && this.livroRepository.validacaoISBN(novosDados.isbn) === false) {
+            throw new Error("ISBN invalido. Precisa ter 13 digitos");
+        }
+        if (novosDados.data_publicacao) {
+            novosDados.data_publicacao = new Date(novosDados.data_publicacao);
+        }
         return await this.livroRepository.atualizarLivroPorId(id, novosDados);
     }
 }

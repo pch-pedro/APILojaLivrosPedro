@@ -8,9 +8,11 @@ const livroRoutes_js_1 = __importDefault(require("./routes/livroRoutes.js"));
 const usuarioRoutes_js_1 = __importDefault(require("./routes/usuarioRoutes.js"));
 const categoriaRoutes_js_1 = __importDefault(require("./routes/categoriaRoutes.js"));
 const swagger_js_1 = require("./config/swagger.js");
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 // Middleware
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Health check
