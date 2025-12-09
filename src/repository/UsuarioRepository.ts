@@ -1,11 +1,18 @@
-import { UsuarioModel, TipoUsuario } from "../model/entity/UsuarioModel";
+import { UsuarioModel } from "../model/entity/UsuarioModel";
+import { TipoUsuario } from "../enums/TipoUsuario";
 import { executarComandoSQL } from "../database/mysql";
 
 export class UsuarioRepository{
-    private static instance: UsuarioModel;
+    private static instance: UsuarioRepository;
 
-    constructor(){
-        this.createTable();
+    constructor(){}
+
+    public static async getInstance(): Promise<UsuarioRepository> {
+        if (!UsuarioRepository.instance) {
+            UsuarioRepository.instance = new UsuarioRepository();
+            await UsuarioRepository.instance.createTable(); 
+        }
+        return UsuarioRepository.instance;
     }
 
     public async createTable(): Promise<void> {

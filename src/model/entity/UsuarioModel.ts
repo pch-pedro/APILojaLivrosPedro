@@ -1,7 +1,4 @@
-export enum TipoUsuario {
-    CLIENTE = 'CLIENTE',
-    ADMIN = 'ADMIN'
-}
+import { TipoUsuario } from "../../enums/TipoUsuario";
 
 export class UsuarioModel{
     id?: number;

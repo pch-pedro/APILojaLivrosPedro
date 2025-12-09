@@ -37,6 +37,7 @@ exports.UsuarioService = void 0;
 const bcrypt = __importStar(require("bcryptjs"));
 const UsuarioRepository_1 = require("../repository/UsuarioRepository");
 const UsuarioModel_1 = require("../model/entity/UsuarioModel");
+const TipoUsuario_1 = require("../enums/TipoUsuario");
 const UsuarioResponseDto_1 = require("../model/dto/UsuarioResponseDto");
 const errors_1 = require("../utils/errors");
 class UsuarioService {
@@ -72,7 +73,7 @@ class UsuarioService {
         }
         const salt = await bcrypt.genSalt(10);
         const senha_hash = await bcrypt.hash(data.senha_hash, salt);
-        const tipo_usuario = data.tipo_usuario || UsuarioModel_1.TipoUsuario.CLIENTE;
+        const tipo_usuario = data.tipo_usuario || TipoUsuario_1.TipoUsuario.CLIENTE;
         const createdEntity = await this.usuarioRepository.inserirUsuario(data.nome, data.email, senha_hash, data.telefone, tipo_usuario);
         const { senha_hash: _, ...safeUser } = createdEntity;
         return new UsuarioResponseDto_1.UsuarioResponseDto(createdEntity);

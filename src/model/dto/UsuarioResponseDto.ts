@@ -1,4 +1,5 @@
-import { UsuarioModel, TipoUsuario } from "../entity/UsuarioModel";
+import { UsuarioModel } from "../entity/UsuarioModel";
+import { TipoUsuario } from "../../enums/TipoUsuario";
 
 export type UsuarioResponseInput = Omit<UsuarioModel, 'senha_hash'>;
 

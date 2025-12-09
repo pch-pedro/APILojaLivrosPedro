@@ -1,4 +1,4 @@
-import { TipoUsuario } from "../entity/UsuarioModel";
+import { TipoUsuario } from "../../enums/TipoUsuario";
 
 export class UsuarioRequestDto{
     nome: string;

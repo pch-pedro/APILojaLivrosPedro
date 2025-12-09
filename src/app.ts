@@ -13,6 +13,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(cors());
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'API em funcionamento', timestamp: new Date() });

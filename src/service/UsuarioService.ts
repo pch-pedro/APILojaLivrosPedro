@@ -1,9 +1,13 @@
 import * as bcrypt from 'bcryptjs';
 import { UsuarioRepository } from '../repository/UsuarioRepository';
-import { UsuarioModel, TipoUsuario } from '../model/entity/UsuarioModel';
+import { UsuarioModel} from '../model/entity/UsuarioModel';
+import { TipoUsuario } from '../enums/TipoUsuario';
 import { UsuarioRequestDto } from '../model/dto/UsuarioRequestDto';
 import { UsuarioResponseDto } from '../model/dto/UsuarioResponseDto';
 import { NotFoundError, ConflictError, ValidationError } from '../utils/errors'; 
+import { hash } from 'crypto';
+
+export type UsuarioResponseInput = Omit<UsuarioModel, 'senha_hash'>;
 
 type UsuarioUpdateRequestDto = Partial<UsuarioRequestDto>; 
 
@@ -13,15 +17,18 @@ export class UsuarioService {
     constructor(usuarioRepository: UsuarioRepository = new UsuarioRepository()) {
         this.usuarioRepository = usuarioRepository;
     }
-    
+
+    private mapToDto(model: UsuarioModel): UsuarioResponseDto {
+        const { senha_hash: _, ...safeUser } = model;
+        return new UsuarioResponseDto(safeUser as UsuarioResponseInput);
+    }
 
     private validarRequest(data: UsuarioRequestDto | UsuarioUpdateRequestDto, isUpdate: boolean = false): void {
-        const { nome, email, senha_hash, telefone } = data;
-        
-        if (!isUpdate) {
-            if (!nome || !email || !senha_hash || !telefone) {
-                throw new ValidationError('Nome, email, senha e telefone são campos obrigatórios.');
-            }
+        const { nome, email, senha_hash, telefone } = data as UsuarioRequestDto; 
+        const senhaField = senha_hash || data.senha_hash;
+
+        if (!isUpdate && (!nome || !email || !senhaField || !telefone)) {
+            throw new ValidationError('Nome, email, senha e telefone são campos obrigatórios.');
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
@@ -29,11 +36,11 @@ export class UsuarioService {
             throw new ValidationError('Formato de email inválido.');
         }
 
-        if (senha_hash) {
-            if (senha_hash.length < 8 || 
-                !/[A-Z]/.test(senha_hash) || 
-                !/[a-z]/.test(senha_hash) || 
-                !/[0-9]/.test(senha_hash)) {
+        if (senhaField) {
+            if (senhaField.length < 8 || 
+                !/[A-Z]/.test(senhaField) || 
+                !/[a-z]/.test(senhaField) || 
+                !/[0-9]/.test(senhaField)) {
                 throw new ValidationError('A senha deve ter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.');
             }
         }
@@ -48,10 +55,10 @@ export class UsuarioService {
         }
 
         const salt = await bcrypt.genSalt(10);
-        const senha_hash = await bcrypt.hash(data.senha_hash, salt);
+        const senha_hash = await bcrypt.hash(data.senha_hash, salt); 
 
         const tipo_usuario = data.tipo_usuario || TipoUsuario.CLIENTE; 
-        
+
         const createdEntity = await this.usuarioRepository.inserirUsuario(
             data.nome, 
             data.email, 
@@ -60,20 +67,16 @@ export class UsuarioService {
             tipo_usuario,
         );
 
-        const { senha_hash: _, ...safeUser } = createdEntity;
-
-        return new UsuarioResponseDto(createdEntity);
+        return this.mapToDto(createdEntity);
     }
 
-
-    async buscarUsuarioPorId(id: number): Promise<UsuarioResponseDto> {
-        const entity = await this.usuarioRepository.buscarUsuarioPorId(id);
+    async buscarUsuarioPorId(id: number): Promise<UsuarioResponseDto > {
+        const entity = await this.usuarioRepository.buscarUsuarioPorId(id); 
 
         if (!entity) {
             throw new NotFoundError(`Usuário com ID ${id} não encontrado.`);
         }
-
-        return new UsuarioResponseDto(entity);
+        return this.mapToDto(entity);
     }
 
     async atualizarUsuario(id: number, data: UsuarioUpdateRequestDto): Promise<UsuarioResponseDto> {
@@ -90,7 +93,6 @@ export class UsuarioService {
             newSenhaHash = await bcrypt.hash(data.senha_hash, salt);
         }
 
-        // 3. Cria a Entity atualizada
         const updatedEntity = new UsuarioModel(
             data.nome ?? existingEntity.nome,
             data.email ?? existingEntity.email, 
@@ -105,7 +107,7 @@ export class UsuarioService {
                 throw new NotFoundError(`Falha ao atualizar o usuário ${id}.`);
         }
 
-        return new UsuarioResponseDto(resultEntity);
+        return this.mapToDto(resultEntity);
     }
 
     async removerUsuario(id: number): Promise<void> {
