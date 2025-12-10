@@ -1,42 +1,47 @@
 import * as mysql from 'mysql2';
 import { Pool } from 'mysql2';
+import dotenv from 'dotenv';
 
-const dbConfig = {
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'root',
-    database: 'lectus_bd'
+// Carrega variáveis do arquivo .env se estiver rodando localmente
+dotenv.config();
+
+const dbName = process.env.DB_NAME || 'lectus_bd';
+
+// Configuração base (sem o banco de dados específico) para a conexão inicial
+const baseConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASS || 'root',
 };
-
-const dbName = 'lectus_bd';
 
 let pool: Pool | null = null;
 
-// Promise que aguarda o pool estar pronto (após garantir que o database existe)
+// Promise que aguarda o pool estar pronto
 const poolReady: Promise<void> = new Promise((resolve, reject) => {
-    const tmpConn = mysql.createConnection(dbConfig);
-    
+    // 1. Conecta sem especificar o banco de dados para poder criar se não existir
+    const tmpConn = mysql.createConnection(baseConfig);
+
     tmpConn.connect((err) => {
         if (err) {
-            console.error('Erro ao conectar para criar database:', err);
+            console.error('Erro ao conectar ao MySQL (verifique as credenciais):', err);
             return reject(err);
         }
 
-        // Cria o database se não existir
+        // 2. Cria o database se não existir
         tmpConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`, (err) => {
+            // Fecha a conexão temporária independentemente de erro ou sucesso
+            tmpConn.end();
+
             if (err) {
-                tmpConn.end();
                 console.error('Erro ao criar/garantir database:', err);
                 return reject(err);
             }
 
-            tmpConn.end();
-
-            // Agora cria o pool apontando para o database específico
+            // 3. Agora cria o pool definitivo apontando para o database correto
             const poolConfig = {
-                ...dbConfig,
-                database: dbName,
+                ...baseConfig,
+                database: dbName, // Adiciona o banco especifico aqui
                 waitForConnections: true,
                 connectionLimit: 10,
                 queueLimit: 0
@@ -51,7 +56,7 @@ const poolReady: Promise<void> = new Promise((resolve, reject) => {
 
 export async function executarComandoSQL(query: string, valores: any[] = []): Promise<any> {
     await poolReady;
-    
+
     return new Promise<any>((resolve, reject) => {
         if (!pool) {
             return reject(new Error('Pool MySQL não inicializado'));
@@ -59,7 +64,7 @@ export async function executarComandoSQL(query: string, valores: any[] = []): Pr
 
         pool.query(query, valores, (err, resultado) => {
             if (err) {
-                console.error('Erro ao executar a query.', err);
+                console.error('Erro ao executar a query:', query, err);
                 return reject(err);
             }
             resolve(resultado);
@@ -69,10 +74,10 @@ export async function executarComandoSQL(query: string, valores: any[] = []): Pr
 
 export async function fecharConexao(): Promise<void> {
     await poolReady;
-    
+
     return new Promise<void>((resolve, reject) => {
         if (!pool) return resolve();
-        
+
         pool.end((err) => {
             if (err) return reject(err);
             console.log('Conexão com o pool MySQL fechada.');
