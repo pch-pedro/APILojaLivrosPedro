@@ -9,14 +9,11 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    // ALIASES DE CAMINHO (IMPORTANTE PARA TSOA E NODE)
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
     }
-    // FIM DA CONFIGURAÇÃO DE ALIASES
   },
   "include": ["src/**/*"]
 }

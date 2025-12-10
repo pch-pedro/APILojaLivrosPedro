@@ -195,9 +195,12 @@
 		"securitySchemes": {}
 	},
 	"info": {
-		"title": "API Livraria Documentação",
+		"title": "apilojalivros",
 		"version": "1.0.0",
-		"description": "Documentação da API usando Swagger"
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
 	},
 	"paths": {
 		"/usuario": {
@@ -1278,8 +1281,7 @@
 	},
 	"servers": [
 		{
-			"url": "http://localhost:3090/livraria",
-			"description": "Servidor de Desenvolvimento"
+			"url": "https://[object Object]/"
 		}
 	]
 }
