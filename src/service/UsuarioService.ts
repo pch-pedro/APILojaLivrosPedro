@@ -70,6 +70,12 @@ export class UsuarioService {
         return this.mapToDto(createdEntity);
     }
 
+    async listarUsuarios(): Promise<UsuarioResponseDto[]>{
+        const usuarios = await this.usuarioRepository.listarUsuarios();
+        return usuarios.map(usuario => this.mapToDto(usuario));
+        return usuarios.map(usuario => this.mapToDto(usuario));
+    }
+
     async buscarUsuarioPorId(id: number): Promise<UsuarioResponseDto > {
         const entity = await this.usuarioRepository.buscarUsuarioPorId(id); 
 

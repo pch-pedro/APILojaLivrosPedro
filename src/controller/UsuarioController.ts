@@ -4,6 +4,7 @@ import { UsuarioRequestDto } from "../model/dto/UsuarioRequestDto";
 import { UsuarioResponseDto } from "../model/dto/UsuarioResponseDto";
 import { BasicResponseDto } from "../model/dto/BasicResponseDto";
 import { NotFoundError, ConflictError, ValidationError } from '../utils/errors'; 
+import { UsuarioUpdateDto } from "../model/dto/UsuarioUpdateDto";
 type UsuarioFailResponse = TsoaResponse<400 | 404 | 409 | 500, BasicResponseDto>;
 
 const usuarioService = new UsuarioService();
@@ -33,6 +34,19 @@ export class UsuarioController extends Controller {
         }
     }
 
+    @Get()
+    public async ListarUsuarios(
+        @Res() fail: UsuarioFailResponse,
+        @Res() success: TsoaResponse<200, BasicResponseDto>
+    ): Promise<void>{
+        try{
+            const usuarioDto = await usuarioService.listarUsuarios();
+            return success(200, new BasicResponseDto("Usuarios cadastrados no sistema listado com sucesso", usuarioDto));
+        }catch(err: any){
+            return fail(500, new BasicResponseDto("Erro ao listar usuarios " + err.message, undefined));
+        }
+    }
+
     @Get("{id}")
     public async buscarUsuario(
         @Path() id: number,
@@ -53,7 +67,7 @@ export class UsuarioController extends Controller {
     @Put("{id}")
     public async atualizarUsuario(
         @Path() id: number,
-        @Body() dto: UsuarioRequestDto,
+        @Body() dto: UsuarioUpdateDto,
         @Res() fail: UsuarioFailResponse,
         @Res() success: TsoaResponse<200, BasicResponseDto>
     ): Promise<void> {

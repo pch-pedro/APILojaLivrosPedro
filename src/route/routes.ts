@@ -50,6 +50,18 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UsuarioUpdateDto": {
+        "dataType": "refObject",
+        "properties": {
+            "nome": {"dataType":"string"},
+            "email": {"dataType":"string"},
+            "senha_hash": {"dataType":"string"},
+            "telefone": {"dataType":"string"},
+            "tipo_usuario": {"ref":"TipoUsuario"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "FormaPagamento": {
         "dataType": "refEnum",
         "enums": ["PIX","CARTAO_CREDITO","BOLETO","TRANSFERENCIA"],
@@ -185,6 +197,37 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUsuarioController_ListarUsuarios: Record<string, TsoaRoute.ParameterSchema> = {
+                fail: {"in":"res","name":"500","required":true,"ref":"BasicResponseDto"},
+                success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
+        };
+        app.get('/usuarios',
+            ...(fetchMiddlewares<RequestHandler>(UsuarioController)),
+            ...(fetchMiddlewares<RequestHandler>(UsuarioController.prototype.ListarUsuarios)),
+
+            async function UsuarioController_ListarUsuarios(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUsuarioController_ListarUsuarios, request, response });
+
+                const controller = new UsuarioController();
+
+              await templateService.apiHandler({
+                methodName: 'ListarUsuarios',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsUsuarioController_buscarUsuario: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
                 fail: {"in":"res","name":"500","required":true,"ref":"BasicResponseDto"},
@@ -219,7 +262,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsUsuarioController_atualizarUsuario: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
-                dto: {"in":"body","name":"dto","required":true,"ref":"UsuarioRequestDto"},
+                dto: {"in":"body","name":"dto","required":true,"ref":"UsuarioUpdateDto"},
                 fail: {"in":"res","name":"500","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
