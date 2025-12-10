@@ -1,12 +1,12 @@
 import express, { type Express } from 'express';
 import livroRoutes from './routes/livroRoutes.js';
-import usuarioRoutes from './routes/usuarioRoutes.js';
 import categoriaRoutes from './routes/categoriaRoutes.js'
 import { setupSwagger } from './config/swagger.js';
 import pedidoRoutes from './routes/pedidoRoutes.js'
 import itemPedidoRoutes from './routes/itemPedidoRoutes.js'
 import carrinhoRoutes from './routes/carrinhoRoutes.js'
 import cors from 'cors';
+import { RegisterRoutes } from './route/routes.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -16,16 +16,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors());
-
-// Health check
-app.get('/health', (req, res) => {
-    res.json({ status: 'API em funcionamento', timestamp: new Date() });
-});
+RegisterRoutes(app);
 
 // Rotas
 app.use('/livros', livroRoutes);
-app.use('/usuarios', usuarioRoutes);
 app.use('/categorias', categoriaRoutes);
 app.use('/pedidos', pedidoRoutes);
 app.use('./item-pedido', itemPedidoRoutes);
@@ -33,6 +27,11 @@ app.use('/carrinho', carrinhoRoutes);
 
 // Configuração do Swagger
 setupSwagger(app);
+
+// Health check
+app.get('/health', (req, res) => {
+    res.json({ status: 'API em funcionamento', timestamp: new Date() });
+});
 
 // 404 para rotas não encontradas
 app.use((req, res) => {

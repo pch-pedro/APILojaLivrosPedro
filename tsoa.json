@@ -9,9 +9,9 @@
         "specVersion": 3,
         "spec": {
             "info": {
-                "title": "API Livraria Documentação comtestes e etc",
+                "title": "API Livraria Documentação comtestes e etc 1.0",
                 "version": "1.0.2",
-                "description": "Documentação da API usando Swagger para realizacao de testes e etc"
+                "description": "Documentação da API usando Swagger para realizacao de testes e etc e tal "
             },
             "servers": [
                 {
