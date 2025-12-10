@@ -28,33 +28,32 @@ router.get('/', async (req, res) => {
         return res.status(500).json(LivroView_1.LivroView.formatarErro(err.message || 'Erro ao listar livros', 500));
     }
 });
+// GET /livros/isbn/:isbn - buscar livro pelo ISBN
+router.get('/isbn/:isbn', async (req, res) => {
+    try {
+        const isbn = String(req.params.isbn);
+        const livro = await LivroService_1.default.filtrarLivroISBN(isbn);
+        if (!livro) {
+            return res.status(404).json(LivroView_1.LivroView.formatarErro("Livro nao encontrado pelo ISBN informado", 404));
+        }
+        return res.json(LivroView_1.LivroView.formatarSucesso(LivroView_1.LivroView.formatarLivro(livro), "Livro encontrado pelo ISBN", 200));
+    }
+    catch (err) {
+        return res.status(404).json(LivroView_1.LivroView.formatarErro(err.message || "Livro nao encontrado pelo ISBN no sistema", 404));
+    }
+});
 // GET /livros/:id - buscar livro por id
 router.get('/:id', async (req, res) => {
     try {
         const id = Number(req.params.id);
         const livro = await LivroService_1.default.filtrarLivro({ id });
         if (!livro) {
-            return res.status(404).json(LivroView_1.LivroView.formatarErro('Livro não encontrado', 404));
+            return res.status(404).json(LivroView_1.LivroView.formatarErro("Livro nao encontrado pelo ID", 404));
         }
-        return res.json(LivroView_1.LivroView.formatarSucesso(LivroView_1.LivroView.formatarLivro(livro), 'Livro encontrado', 200));
+        return res.json(LivroView_1.LivroView.formatarSucesso(LivroView_1.LivroView.formatarLivro(livro), "Livro encontrado pelo ID", 200));
     }
     catch (err) {
-        return res.status(404).json(LivroView_1.LivroView.formatarErro(err.message || 'Livro não encontrado', 404));
-        // GET /livros/isbn/:isbn - buscar livro pelo ISBN
-        router.get('/isbn/:isbn', async (req, res) => {
-            try {
-                const isbn = String(req.params.isbn);
-                const livro = await LivroService_1.default.filtrarLivroPorISBN(isbn);
-                if (!livro) {
-                    return res.status(404).json(LivroView_1.LivroView.formatarErro('Livro não encontrado por ISBN', 404));
-                }
-                return res.json(LivroView_1.LivroView.formatarSucesso(LivroView_1.LivroView.formatarLivro(livro), 'Livro encontrado por ISBN', 200));
-            }
-            catch (err) {
-                return res.status(404).json(LivroView_1.LivroView.formatarErro(err.message || 'Livro não encontrado por ISBN', 404));
-            }
-        });
-        return res.status(404).json(LivroView_1.LivroView.formatarErro(err.message || 'Livro não encontrado por ISBN', 404));
+        return res.status(404).json(LivroView_1.LivroView.formatarErro(err.message || "Livro nao encontrado", 404));
     }
 });
 // PUT /livros/:id - atualizar livro

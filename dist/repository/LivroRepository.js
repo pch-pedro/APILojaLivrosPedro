@@ -57,7 +57,7 @@ class LivroRepository {
             livro.promocao
         ]);
         console.log("Livro criado com Sucesso: ", resultado);
-        return new LivroModel_1.LivroModel(livro.categoria_id, livro.titulo, livro.autor, livro.isbn, livro.preco, livro.estoque, livro.sinopse, livro.imageURL, livro.editora, livro.data_publicacao, livro.promocao);
+        return new LivroModel_1.LivroModel(livro.categoria_id, livro.titulo, livro.autor, livro.isbn, livro.preco, livro.estoque, livro.sinopse, livro.imageURL, livro.editora, livro.data_publicacao, livro.promocao, resultado.insertId);
     }
     validacaoISBN(isbn) {
         return isbn.toString().length === 13;
@@ -66,7 +66,7 @@ class LivroRepository {
         const resultado = await (0, mysql_1.executarComandoSQL)("SELECT * FROM Livro WHERE isbn = ? LIMIT 1", [isbn]);
         if (resultado && resultado.length > 0) {
             const row = resultado[0];
-            return new LivroModel_1.LivroModel(row.categoria_id, row.titulo, row.isbn, row.preco, row.estoque, row.sinopse, row.imageURL, row.autor, row.editora, row.data_publicacao);
+            return new LivroModel_1.LivroModel(row.categoria_id, row.titulo, row.autor, row.isbn, row.preco, row.estoque, row.sinopse, row.imageURL, row.editora, row.data_publicacao, row.promocao, row.id);
         }
         return null;
     }
@@ -74,7 +74,7 @@ class LivroRepository {
         const resultado = await (0, mysql_1.executarComandoSQL)("SELECT * FROM Livro WHERE id = ?", [id]);
         if (resultado && resultado.length > 0) {
             const user = resultado[0];
-            return new LivroModel_1.LivroModel(user.categoria_id, user.titulo, user.isbn, user.preco, user.estoque, user.sinopse, user.imageURL, user.autor, user.editora, user.data_publicacao);
+            return new LivroModel_1.LivroModel(user.categoria_id, user.titulo, user.autor, user.isbn, user.preco, user.estoque, user.sinopse, user.imageURL, user.editora, user.data_publicacao, user.promocao, user.id);
         }
         return null;
     }
@@ -109,11 +109,22 @@ class LivroRepository {
             campos.push("autor = ?");
             valores.push(novosDados.autor);
         }
+        if (novosDados.isbn) {
+            if (this.validacaoISBN(novosDados.isbn) === false) {
+                throw new Error("ISBN invalida. Precisa ter 13 digitos");
+            }
+            const existente = await this.filtraLivroPorISBN(novosDados.isbn);
+            if (existente && existente.id !== id) {
+                throw new Error("Ja existe outro livro com este ISBN");
+            }
+            campos.push("isbn = ?");
+            valores.push(novosDados.isbn);
+        }
         if (novosDados.preco) {
             campos.push("preco = ?");
             valores.push(novosDados.preco);
         }
-        if (novosDados.estoque) {
+        if (novosDados.estoque !== undefined) {
             campos.push("estoque = ?");
             valores.push(novosDados.estoque);
         }
@@ -133,7 +144,7 @@ class LivroRepository {
             campos.push("data_publicacao = ?");
             valores.push(novosDados.data_publicacao);
         }
-        if (novosDados.promocao) {
+        if (novosDados.promocao !== undefined) {
             campos.push("promocao = ?");
             valores.push(novosDados.promocao);
         }
@@ -153,7 +164,7 @@ class LivroRepository {
         if (resultado && resultado.length > 0) {
             for (let i = 0; i < resultado.length; i++) {
                 const user = resultado[i];
-                livros.push(new LivroModel_1.LivroModel(user.categoria_id, user.titulo, user.isbn, user.preco, user.estoque, user.sinopse, user.imageURL, user.autor, user.editora, user.data_publicacao));
+                livros.push(new LivroModel_1.LivroModel(user.categoria_id, user.titulo, user.autor, user.isbn, user.preco, user.estoque, user.sinopse, user.imageURL, user.editora, user.data_publicacao, user.promocao, user.id));
             }
         }
         return livros;

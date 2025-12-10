@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuarioController = void 0;
 const tsoa_1 = require("tsoa");
 const UsuarioService_1 = require("../service/UsuarioService");
-const UsuarioRequestDto_1 = require("../model/dto/UsuarioRequestDto");
-const BasicResponseDto_1 = require("../model/dto/BasicResponseDto");
+const UsuarioRequestDto_1 = require("../model/dto/UsuarioRequestDto"); // <--- CAMINHO RELATIVO
+const BasicResponseDto_1 = require("../model/dto/BasicResponseDto"); // <--- CAMINHO RELATIVO
 const errors_1 = require("../utils/errors");
 const usuarioService = new UsuarioService_1.UsuarioService();
 let UsuarioController = class UsuarioController extends tsoa_1.Controller {

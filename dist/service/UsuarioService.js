@@ -45,22 +45,25 @@ class UsuarioService {
     constructor(usuarioRepository = new UsuarioRepository_1.UsuarioRepository()) {
         this.usuarioRepository = usuarioRepository;
     }
+    mapToDto(model) {
+        const { senha_hash: _, ...safeUser } = model;
+        return new UsuarioResponseDto_1.UsuarioResponseDto(safeUser);
+    }
     validarRequest(data, isUpdate = false) {
         const { nome, email, senha_hash, telefone } = data;
-        if (!isUpdate) {
-            if (!nome || !email || !senha_hash || !telefone) {
-                throw new errors_1.ValidationError('Nome, email, senha e telefone são campos obrigatórios.');
-            }
+        const senhaField = senha_hash || data.senha_hash;
+        if (!isUpdate && (!nome || !email || !senhaField || !telefone)) {
+            throw new errors_1.ValidationError('Nome, email, senha e telefone são campos obrigatórios.');
         }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (email && !emailRegex.test(email)) {
             throw new errors_1.ValidationError('Formato de email inválido.');
         }
-        if (senha_hash) {
-            if (senha_hash.length < 8 ||
-                !/[A-Z]/.test(senha_hash) ||
-                !/[a-z]/.test(senha_hash) ||
-                !/[0-9]/.test(senha_hash)) {
+        if (senhaField) {
+            if (senhaField.length < 8 ||
+                !/[A-Z]/.test(senhaField) ||
+                !/[a-z]/.test(senhaField) ||
+                !/[0-9]/.test(senhaField)) {
                 throw new errors_1.ValidationError('A senha deve ter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.');
             }
         }
@@ -75,15 +78,14 @@ class UsuarioService {
         const senha_hash = await bcrypt.hash(data.senha_hash, salt);
         const tipo_usuario = data.tipo_usuario || TipoUsuario_1.TipoUsuario.CLIENTE;
         const createdEntity = await this.usuarioRepository.inserirUsuario(data.nome, data.email, senha_hash, data.telefone, tipo_usuario);
-        const { senha_hash: _, ...safeUser } = createdEntity;
-        return new UsuarioResponseDto_1.UsuarioResponseDto(createdEntity);
+        return this.mapToDto(createdEntity);
     }
     async buscarUsuarioPorId(id) {
         const entity = await this.usuarioRepository.buscarUsuarioPorId(id);
         if (!entity) {
             throw new errors_1.NotFoundError(`Usuário com ID ${id} não encontrado.`);
         }
-        return new UsuarioResponseDto_1.UsuarioResponseDto(entity);
+        return this.mapToDto(entity);
     }
     async atualizarUsuario(id, data) {
         this.validarRequest(data, true);
@@ -96,13 +98,12 @@ class UsuarioService {
             const salt = await bcrypt.genSalt(10);
             newSenhaHash = await bcrypt.hash(data.senha_hash, salt);
         }
-        // 3. Cria a Entity atualizada
         const updatedEntity = new UsuarioModel_1.UsuarioModel(data.nome ?? existingEntity.nome, data.email ?? existingEntity.email, newSenhaHash, data.telefone ?? existingEntity.telefone, data.tipo_usuario ?? existingEntity.tipo_usuario, id);
         const resultEntity = await this.usuarioRepository.atualizarDadosUsuario(updatedEntity);
         if (!resultEntity) {
             throw new errors_1.NotFoundError(`Falha ao atualizar o usuário ${id}.`);
         }
-        return new UsuarioResponseDto_1.UsuarioResponseDto(resultEntity);
+        return this.mapToDto(resultEntity);
     }
     async removerUsuario(id) {
         const existingEntity = await this.usuarioRepository.buscarUsuarioPorId(id);

@@ -32,39 +32,46 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.executarComandoSQL = executarComandoSQL;
 exports.fecharConexao = fecharConexao;
 const mysql = __importStar(require("mysql2"));
-const dbConfig = {
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'root',
-    database: 'lectus_bd'
+const dotenv_1 = __importDefault(require("dotenv"));
+// Carrega variáveis do arquivo .env se estiver rodando localmente
+dotenv_1.default.config();
+const dbName = process.env.DB_NAME || 'lectus_bd';
+// Configuração base (sem o banco de dados específico) para a conexão inicial
+const baseConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASS || 'root',
 };
-const dbName = 'lectus_bd';
 let pool = null;
-// Promise que aguarda o pool estar pronto (após garantir que o database existe)
+// Promise que aguarda o pool estar pronto
 const poolReady = new Promise((resolve, reject) => {
-    const tmpConn = mysql.createConnection(dbConfig);
+    // 1. Conecta sem especificar o banco de dados para poder criar se não existir
+    const tmpConn = mysql.createConnection(baseConfig);
     tmpConn.connect((err) => {
         if (err) {
-            console.error('Erro ao conectar para criar database:', err);
+            console.error('Erro ao conectar ao MySQL (verifique as credenciais):', err);
             return reject(err);
         }
-        // Cria o database se não existir
+        // 2. Cria o database se não existir
         tmpConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`, (err) => {
+            // Fecha a conexão temporária independentemente de erro ou sucesso
+            tmpConn.end();
             if (err) {
-                tmpConn.end();
                 console.error('Erro ao criar/garantir database:', err);
                 return reject(err);
             }
-            tmpConn.end();
-            // Agora cria o pool apontando para o database específico
+            // 3. Agora cria o pool definitivo apontando para o database correto
             const poolConfig = {
-                ...dbConfig,
-                database: dbName,
+                ...baseConfig,
+                database: dbName, // Adiciona o banco especifico aqui
                 waitForConnections: true,
                 connectionLimit: 10,
                 queueLimit: 0
@@ -83,7 +90,7 @@ async function executarComandoSQL(query, valores = []) {
         }
         pool.query(query, valores, (err, resultado) => {
             if (err) {
-                console.error('Erro ao executar a query.', err);
+                console.error('Erro ao executar a query:', query, err);
                 return reject(err);
             }
             resolve(resultado);

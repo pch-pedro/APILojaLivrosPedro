@@ -4,18 +4,18 @@ exports.LivroView = void 0;
 class LivroView {
     static formatarLivro(livro) {
         return {
-            id: livro.getId(),
-            categoria_id: livro.getCategoriaId(),
-            titulo: livro.getTitulo(),
-            autor: livro.getAutor(),
-            isbn: livro.getIsbn(),
-            preco: livro.getPreco(),
-            estoque: livro.getEstoque(),
-            sinopse: livro.getSinopse(),
-            imageURL: livro.getImageURL(),
-            editora: livro.getEditora(),
-            data_publicacao: livro.getDataPublicacao(),
-            promocao: livro.getPromocao()
+            id: livro.id,
+            categoria_id: livro.categoria_id,
+            titulo: livro.titulo,
+            autor: livro.autor,
+            isbn: livro.isbn,
+            preco: livro.preco,
+            estoque: livro.estoque,
+            sinopse: livro.sinopse,
+            imageURL: livro.imageURL,
+            editora: livro.editora,
+            data_publicacao: livro.data_publicacao?.toISOString(),
+            promocao: livro.promocao
         };
     }
     static formatarListaLivros(livros) {

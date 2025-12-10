@@ -5,8 +5,13 @@ const UsuarioModel_1 = require("../model/entity/UsuarioModel");
 const mysql_1 = require("../database/mysql");
 class UsuarioRepository {
     static instance;
-    constructor() {
-        this.createTable();
+    constructor() { }
+    static async getInstance() {
+        if (!UsuarioRepository.instance) {
+            UsuarioRepository.instance = new UsuarioRepository();
+            await UsuarioRepository.instance.createTable();
+        }
+        return UsuarioRepository.instance;
     }
     async createTable() {
         const query = `
