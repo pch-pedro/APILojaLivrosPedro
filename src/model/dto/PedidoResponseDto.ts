@@ -1,5 +1,3 @@
-// src/model/dto/PedidoResponseDto.ts
-
 import { PedidoModel } from "../entity/PedidoModel";
 import { ItemPedidoModel } from "../entity/ItemPedidoModel";
 import { PedidoStatus } from "../../enums/PedidoStatus";

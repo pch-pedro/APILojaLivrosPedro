@@ -5,6 +5,7 @@ import categoriaRoutes from './routes/categoriaRoutes.js'
 import { setupSwagger } from './config/swagger.js';
 import pedidoRoutes from './routes/pedidoRoutes.js'
 import itemPedidoRoutes from './routes/itemPedidoRoutes.js'
+import carrinhoRoutes from './routes/carrinhoRoutes.js'
 import cors from 'cors';
 
 const app: Express = express();
@@ -26,8 +27,9 @@ app.get('/health', (req, res) => {
 app.use('/livros', livroRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/categorias', categoriaRoutes);
-app.use('/pedidos', pedidoRoutes)
-app.use('./item-pedido', pedidoRoutes)
+app.use('/pedidos', pedidoRoutes);
+app.use('./item-pedido', itemPedidoRoutes);
+app.use('/carrinho', carrinhoRoutes);
 
 // Configuração do Swagger
 setupSwagger(app);
