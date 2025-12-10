@@ -1,25 +1,27 @@
 {
-  "entryFile": "src/app.ts",
-  "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": [
-    "src/controller/**/*.ts"
-  ],
-  "spec": {
-    "outputDirectory": "src/swagger",
-    "specVersion": 3,
-    "info": {
-      "title": "API Livraria Documentação",
-      "version": "1.0.0",
-      "description": "Documentação da API usando Swagger"
+    "entryFile": "src/app.ts",
+    "noImplicitAdditionalProperties": "throw-on-extras",
+    "controllerPathGlobs": [
+        "src/controller/**/*.ts"
+    ],
+    "spec": {
+        "outputDirectory": "dist",
+        "specVersion": 3,
+        "spec": {
+            "info": {
+                "title": "API Livraria Documentação",
+                "version": "1.0.0",
+                "description": "Documentação da API usando Swagger"
+            },
+            "servers": [
+                {
+                    "url": "http://localhost:3090/livraria",
+                    "description": "Servidor de Desenvolvimento"
+                }
+            ]
+        }
     },
-    "servers": [
-      {
-        "url": "/livraria",
-        "description": "Servidor de Produção"
-      }
-    ]
-  },
-  "routes": {
-    "routesDir": "src/route"
-  }
+    "routes": {
+        "routesDir": "src/route"
+    }
 }
