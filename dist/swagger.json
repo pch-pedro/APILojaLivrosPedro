@@ -56,12 +56,8 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"LivroDto": {
+			"LivroRequestDto": {
 				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
 					"categoria_id": {
 						"type": "number",
 						"format": "double"
@@ -97,12 +93,10 @@
 						"format": "date-time"
 					},
 					"promocao": {
-						"type": "boolean",
-						"default": false
+						"type": "boolean"
 					}
 				},
 				"required": [
-					"id",
 					"categoria_id",
 					"titulo",
 					"autor",
@@ -187,16 +181,11 @@
 						"type": "number",
 						"format": "double"
 					},
-					"titulo": {
-						"type": "string"
-					},
 					"nome": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"id",
-					"titulo",
 					"nome"
 				],
 				"type": "object",
@@ -517,7 +506,7 @@
 				]
 			}
 		},
-		"/livro": {
+		"/livros": {
 			"post": {
 				"operationId": "CriarLivro",
 				"responses": {
@@ -555,7 +544,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/LivroDto"
+								"$ref": "#/components/schemas/LivroRequestDto"
 							}
 						}
 					}
@@ -595,7 +584,7 @@
 				"parameters": []
 			}
 		},
-		"/livro/{id}": {
+		"/livros/{id}": {
 			"get": {
 				"operationId": "FiltrarLivro",
 				"responses": {
@@ -608,6 +597,9 @@
 								}
 							}
 						}
+					},
+					"204": {
+						"description": "No content"
 					},
 					"400": {
 						"description": "",
@@ -683,7 +675,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/LivroDto"
+								"$ref": "#/components/schemas/LivroRequestDto"
 							}
 						}
 					}
@@ -701,6 +693,9 @@
 								}
 							}
 						}
+					},
+					"204": {
+						"description": "No content"
 					},
 					"400": {
 						"description": "",

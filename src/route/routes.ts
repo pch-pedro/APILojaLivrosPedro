@@ -44,10 +44,9 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "LivroDto": {
+    "LivroRequestDto": {
         "dataType": "refObject",
         "properties": {
-            "id": {"dataType":"double","required":true},
             "categoria_id": {"dataType":"double","required":true},
             "titulo": {"dataType":"string","required":true},
             "autor": {"dataType":"string","required":true},
@@ -58,7 +57,7 @@ const models: TsoaRoute.Models = {
             "imageURL": {"dataType":"string","required":true},
             "editora": {"dataType":"string","required":true},
             "data_publicacao": {"dataType":"datetime","required":true},
-            "promocao": {"dataType":"boolean","default":false},
+            "promocao": {"dataType":"boolean"},
         },
         "additionalProperties": false,
     },
@@ -85,8 +84,7 @@ const models: TsoaRoute.Models = {
     "CategoriaDto": {
         "dataType": "refObject",
         "properties": {
-            "id": {"dataType":"double","required":true},
-            "titulo": {"dataType":"string","required":true},
+            "id": {"dataType":"double"},
             "nome": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -239,11 +237,11 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsLivroController_criarLivro: Record<string, TsoaRoute.ParameterSchema> = {
-                dto: {"in":"body","name":"dto","required":true,"ref":"LivroDto"},
+                dto: {"in":"body","name":"dto","required":true,"ref":"LivroRequestDto"},
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"201","required":true,"ref":"BasicResponseDto"},
         };
-        app.post('/livro',
+        app.post('/livros',
             ...(fetchMiddlewares<RequestHandler>(LivroController)),
             ...(fetchMiddlewares<RequestHandler>(LivroController.prototype.criarLivro)),
 
@@ -274,7 +272,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"202","required":true,"ref":"BasicResponseDto"},
         };
-        app.get('/livro',
+        app.get('/livros',
             ...(fetchMiddlewares<RequestHandler>(LivroController)),
             ...(fetchMiddlewares<RequestHandler>(LivroController.prototype.listarLivros)),
 
@@ -306,7 +304,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.get('/livro/:id',
+        app.get('/livros/:id',
             ...(fetchMiddlewares<RequestHandler>(LivroController)),
             ...(fetchMiddlewares<RequestHandler>(LivroController.prototype.filtrarLivro)),
 
@@ -335,11 +333,11 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsLivroController_atualizarLivro: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
-                dto: {"in":"body","name":"dto","required":true,"ref":"LivroDto"},
+                dto: {"in":"body","name":"dto","required":true,"ref":"LivroRequestDto"},
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.put('/livro/:id',
+        app.put('/livros/:id',
             ...(fetchMiddlewares<RequestHandler>(LivroController)),
             ...(fetchMiddlewares<RequestHandler>(LivroController.prototype.atualizarLivro)),
 
@@ -371,7 +369,7 @@ export function RegisterRoutes(app: Router) {
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };
-        app.delete('/livro/:id',
+        app.delete('/livros/:id',
             ...(fetchMiddlewares<RequestHandler>(LivroController)),
             ...(fetchMiddlewares<RequestHandler>(LivroController.prototype.removerLivro)),
 

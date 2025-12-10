@@ -26,7 +26,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prebuild": "chmod +x ./node_modules/.bin/tsoa",
     "build": "npx tsoa spec-and-routes && npx tsc --ignoreDeprecations 6.0",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
