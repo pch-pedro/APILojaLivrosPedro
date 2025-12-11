@@ -30,7 +30,7 @@ class LivroRepository {
                 editora VARCHAR(255) NOT NULL,
                 data_publicacao DATE,
                 promocao BOOLEAN DEFAULT FALSE
-                )`;
+                )ENGINE=InnoDB`;
         try {
             const resultado = await (0, mysql_1.executarComandoSQL)(query, []);
             console.log('Tabela de Livro criada com Sucesso!', resultado);

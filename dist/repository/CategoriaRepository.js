@@ -18,7 +18,7 @@ class CategoriaRepository {
         const query = `CREATE TABLE IF NOT EXISTS Categoria(
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 nome VARCHAR(100) NOT NULL
-                )`;
+                )ENGINE=InnoDB`;
         try {
             const resultado = await (0, mysql_1.executarComandoSQL)(query, []);
             console.log('Tabela de Categoria criada com Sucesso!', resultado);

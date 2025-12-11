@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EnderecoRepository = void 0;
 const EnderecoModel_1 = require("../model/entity/EnderecoModel");
-// Ajuste este caminho se necessário
 const mysql_1 = require("../database/mysql");
 class EnderecoRepository {
     static instance;
@@ -29,8 +28,15 @@ class EnderecoRepository {
                 cidade VARCHAR(100) NOT NULL,
                 estado VARCHAR(50) NOT NULL,
                 FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
-            )`;
-        await (0, mysql_1.executarComandoSQL)(query, []);
+            )ENGINE=InnoDB`;
+        try {
+            await (0, mysql_1.executarComandoSQL)(query, []);
+            console.log("Tabela Usuario criada com sucesso.");
+        }
+        catch (err) {
+            console.error("Erro ao criar tabela Usuário:", err);
+            throw err;
+        }
     }
     async inserirEndereco(data) {
         const query = `
