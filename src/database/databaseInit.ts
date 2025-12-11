@@ -12,10 +12,15 @@ export async function inicializarTabelas() {
     console.log("✔ 1. Usuario OK"); 
 
     await CategoriaRepository.getInstance(); 
-    console.log("✔ 2. Categoria OK"); 
+    console.log("✔ 2. Categoria OK");
 
-    await EnderecoRepository.getInstance();
-    console.log("✔ 3. Endereco OK"); 
+    try{
+        await EnderecoRepository.getInstance();
+        console.log("✔ 3. Endereco OK"); 
+    }catch(err){
+        console.error("❌ Erro ao criar tabela Endereco:", err);
+        throw err;
+    }
 
     await LivroRepository.getInstance(); 
     console.log("✔ 4. Livro OK"); 
