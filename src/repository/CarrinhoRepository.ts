@@ -76,27 +76,81 @@ export class CarrinhoRepository {
 
 
     async buscarItens(usuarioId: number, livroId: number): Promise<CarrinhoModel | undefined> {
+        console.log("Buscando item no carrinho para usuário:", usuarioId, "e livro:", livroId);
+
         const query = `
             SELECT id, usuario_id, livro_id, quantidade, data_adicao 
             FROM Carrinho 
             WHERE usuario_id = ? AND livro_id = ?
         `;
-        const [rows] = await executarComandoSQL(query, [usuarioId, livroId]) as [RowDataPacket[]];
 
-        return rows.length > 0 ? this.mapToModel(rows[0]) : undefined;
+        let result;
+        try {
+            result = await executarComandoSQL(query, [usuarioId, livroId]);
+            console.log("Resultado bruto do SQL:", result);
+        } catch (err) {
+            console.error("Erro ao executar comando SQL:", err);
+            throw err;
+        }
+
+        let rows: any[];
+        if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
+            rows = result[0];
+        } else if (Array.isArray(result)) {
+            rows = result;
+        } else {
+            rows = [];
+        }
+
+        console.log("Rows processados:", rows);
+
+        if (rows.length === 0) {
+            console.log("Nenhum item encontrado no carrinho.");
+            return undefined;
+        }
+
+        const item = this.mapToModel(rows[0]);
+        console.log("Item encontrado no carrinho:", item);
+        return item;
     }
 
     async buscarCarrinhoPorUsuId(usuarioId: number): Promise<CarrinhoModel[]> {
+        console.log("Buscando carrinho no repositório para usuário ID:", usuarioId);
+
         const query = `
             SELECT id, usuario_id, livro_id, quantidade, data_adicao 
             FROM Carrinho 
             WHERE usuario_id = ?
             ORDER BY data_adicao DESC
         `;
-        const [rows] = await executarComandoSQL(query, [usuarioId]) as [RowDataPacket[]];
-        
-        return rows.map(this.mapToModel);
+
+        let result;
+        try {
+            result = await executarComandoSQL(query, [usuarioId]);
+            console.log("Resultado bruto do SQL:", result);
+        } catch (err) {
+            console.error("Erro ao executar consulta SQL no CarrinhoRepository:", err);
+            throw err;
+        }
+
+        let rows: RowDataPacket[] = [];
+        if (Array.isArray(result)) {
+            if (result.length > 0 && Array.isArray(result[0])) {
+                rows = result[0];
+            } else {
+                rows = result as RowDataPacket[];
+            }
+        }
+
+        console.log("Rows processados:", rows);
+
+        const models = rows.map(row => this.mapToModel(row));
+        console.log("Itens mapeados para CarrinhoModel:", models);
+
+        return models;
     }
+
+
     
     async removerItem(usuarioId: number, livroId: number): Promise<boolean> {
         const query = 'DELETE FROM Carrinho WHERE usuario_id = ? AND livro_id = ?';

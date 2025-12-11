@@ -6,10 +6,10 @@ class PedidoRequestDto {
     endereco_entrega_id;
     forma_pagamento;
     itens;
-    constructor(usuario_id, endereco_entrega_id, foma_pagamento, itens) {
+    constructor(usuario_id, endereco_entrega_id, forma_pagamento, itens) {
         this.usuario_id = usuario_id;
         this.endereco_entrega_id = endereco_entrega_id;
-        this.forma_pagamento = foma_pagamento;
+        this.forma_pagamento = forma_pagamento;
         this.itens = itens;
     }
 }

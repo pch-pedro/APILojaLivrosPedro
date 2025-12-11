@@ -7,7 +7,6 @@ const express_1 = __importDefault(require("express"));
 const livroRoutes_js_1 = __importDefault(require("./routes/livroRoutes.js"));
 const categoriaRoutes_js_1 = __importDefault(require("./routes/categoriaRoutes.js"));
 const swagger_js_1 = require("./config/swagger.js");
-const pedidoRoutes_js_1 = __importDefault(require("./routes/pedidoRoutes.js"));
 const itemPedidoRoutes_js_1 = __importDefault(require("./routes/itemPedidoRoutes.js"));
 const carrinhoRoutes_js_1 = __importDefault(require("./routes/carrinhoRoutes.js"));
 const cors_1 = __importDefault(require("cors"));
@@ -22,8 +21,7 @@ app.use(express_1.default.urlencoded({ extended: true }));
 // Rotas
 app.use('/livros', livroRoutes_js_1.default);
 app.use('/categorias', categoriaRoutes_js_1.default);
-app.use('/pedidos', pedidoRoutes_js_1.default);
-app.use('./item-pedido', itemPedidoRoutes_js_1.default);
+app.use('/item-pedido', itemPedidoRoutes_js_1.default);
 app.use('/carrinho', carrinhoRoutes_js_1.default);
 // Configuração do Swagger
 (0, swagger_js_1.setupSwagger)(app);

@@ -1,11 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PedidoService = void 0;
-const PedidoRepository_1 = require("../repository/PedidoRepository");
 const PedidoResponseDto_1 = require("../model/dto/PedidoResponseDto");
-const UsuarioRepository_1 = require("../repository/UsuarioRepository");
-const EnderecoRepository_1 = require("../repository/EnderecoRepository");
-const LivroRepository_1 = require("../repository/LivroRepository");
 const PedidoStatus_1 = require("../enums/PedidoStatus");
 const errors_1 = require("../utils/errors");
 const FormaPagamento_1 = require("../enums/FormaPagamento");
@@ -14,7 +10,7 @@ class PedidoService {
     usuarioRepository;
     enderecoRepository;
     livroRepository;
-    constructor(pedidoRepository = PedidoRepository_1.PedidoRepository.getInstance(), usuarioRepository = UsuarioRepository_1.UsuarioRepository.getInstance(), enderecoRepository = EnderecoRepository_1.EnderecoRepository.getInstance(), livroRepository = LivroRepository_1.LivroRepository.getInstance()) {
+    constructor(pedidoRepository, usuarioRepository, enderecoRepository, livroRepository) {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.enderecoRepository = enderecoRepository;
@@ -25,6 +21,9 @@ class PedidoService {
         return new PedidoResponseDto_1.PedidoResponseDto(pedidoModel, itensDto);
     }
     validarRequest(data) {
+        if (!data || typeof data !== 'object') {
+            throw new errors_1.ValidationError('Dados do pedido são obrigatórios e devem ser um objeto válido.');
+        }
         const { usuario_id, endereco_entrega_id, forma_pagamento, itens } = data;
         if (!usuario_id || !endereco_entrega_id || !forma_pagamento || !itens || itens.length === 0) {
             throw new errors_1.ValidationError('Todos os campos (usuario_id, endereco_entrega_id, forma_pagamento) e a lista de itens são obrigatórios.');

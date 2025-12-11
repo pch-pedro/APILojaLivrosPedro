@@ -26,13 +26,14 @@ let CarrinhoController = class CarrinhoController extends tsoa_1.Controller {
             return success(201, new BasicResponseDto_1.BasicResponseDto("Item adicionado/atualizado no carrinho.", itemAtualizado));
         }
         catch (err) {
+            console.error(err);
             if (err instanceof errors_1.NotFoundError)
                 return fail(404, new BasicResponseDto_1.BasicResponseDto(err.message, undefined));
             if (err instanceof errors_1.ValidationError)
                 return fail(400, new BasicResponseDto_1.BasicResponseDto(err.message, undefined));
             if (err instanceof errors_1.ConflictError)
                 return fail(409, new BasicResponseDto_1.BasicResponseDto(err.message, undefined));
-            return fail(500, new BasicResponseDto_1.BasicResponseDto("Erro interno ao adicionar item.", undefined));
+            return fail(500, new BasicResponseDto_1.BasicResponseDto("Erro interno ao adicionar item.", err));
         }
     }
     async listarCarrinho(usuarioId, fail, success) {

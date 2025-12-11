@@ -56,8 +56,26 @@ class EnderecoRepository {
             FROM Endereco 
             WHERE id = ?
         `;
-        const [rows] = await (0, mysql_1.executarComandoSQL)(query, [id]);
-        return rows.length > 0 ? this.mapToModel(rows[0]) : undefined;
+        let result;
+        try {
+            result = await (0, mysql_1.executarComandoSQL)(query, [id]);
+            console.log("Resultado bruto do SQL (buscarPorId):", result);
+        }
+        catch (err) {
+            console.error("Erro ao executar query de endereço por ID:", err);
+            throw err;
+        }
+        let rows = [];
+        if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
+            rows = result[0];
+        }
+        else if (Array.isArray(result)) {
+            rows = result;
+        }
+        if (rows.length === 0) {
+            return undefined;
+        }
+        return this.mapToModel(rows[0]);
     }
     async buscarUsuarioPorId(usuarioId) {
         const query = `
@@ -65,8 +83,23 @@ class EnderecoRepository {
             FROM Endereco 
             WHERE usuario_id = ?
         `;
-        const [rows] = await (0, mysql_1.executarComandoSQL)(query, [usuarioId]);
-        return rows.map(this.mapToModel);
+        let result;
+        try {
+            result = await (0, mysql_1.executarComandoSQL)(query, [usuarioId]);
+            console.log("Resultado bruto do SQL (endereços):", result);
+        }
+        catch (err) {
+            console.error("Erro ao executar query de endereços:", err);
+            throw err;
+        }
+        let rows = [];
+        if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
+            rows = result[0];
+        }
+        else if (Array.isArray(result)) {
+            rows = result;
+        }
+        return rows.map(row => this.mapToModel(row));
     }
     async atualizarDadosEndereco(id, data) {
         const fields = [];

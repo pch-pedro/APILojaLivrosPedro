@@ -17,6 +17,7 @@ const LivroService_1 = require("../service/LivroService");
 const tsoa_1 = require("tsoa");
 const BasicResponseDto_1 = require("../model/dto/BasicResponseDto");
 const LivroRequestDto_1 = require("../model/dto/LivroRequestDto");
+const LivroUpdateDto_1 = require("../model/dto/LivroUpdateDto");
 let LivroController = class LivroController extends tsoa_1.Controller {
     livroService = new LivroService_1.LivroService();
     async criarLivro(dto, fail, success) {
@@ -103,7 +104,7 @@ __decorate([
     __param(2, (0, tsoa_1.Res)()),
     __param(3, (0, tsoa_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, LivroRequestDto_1.LivroRequestDto, Function, Function]),
+    __metadata("design:paramtypes", [Number, LivroUpdateDto_1.LivroUpdateDto, Function, Function]),
     __metadata("design:returntype", Promise)
 ], LivroController.prototype, "atualizarLivro", null);
 __decorate([

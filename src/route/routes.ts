@@ -110,6 +110,24 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LivroUpdateDto": {
+        "dataType": "refObject",
+        "properties": {
+            "categoria_id": {"dataType":"double"},
+            "titulo": {"dataType":"string"},
+            "autor": {"dataType":"string"},
+            "isbn": {"dataType":"string"},
+            "preco": {"dataType":"double"},
+            "estoque": {"dataType":"double"},
+            "sinopse": {"dataType":"string"},
+            "imageURL": {"dataType":"string"},
+            "editora": {"dataType":"string"},
+            "data_publicacao": {"dataType":"datetime"},
+            "promocao": {"dataType":"boolean"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "EnderecoRequestDto": {
         "dataType": "refObject",
         "properties": {
@@ -551,7 +569,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsLivroController_atualizarLivro: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
-                dto: {"in":"body","name":"dto","required":true,"ref":"LivroRequestDto"},
+                dto: {"in":"body","name":"dto","required":true,"ref":"LivroUpdateDto"},
                 fail: {"in":"res","name":"400","required":true,"ref":"BasicResponseDto"},
                 success: {"in":"res","name":"200","required":true,"ref":"BasicResponseDto"},
         };

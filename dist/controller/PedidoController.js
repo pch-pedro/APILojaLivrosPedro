@@ -13,16 +13,31 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PedidoController = void 0;
+exports.getPedidoService = getPedidoService;
 const tsoa_1 = require("tsoa");
 // Importações dos DTOs e Service
 const BasicResponseDto_1 = require("../model/dto/BasicResponseDto");
 const PedidoRequestDto_1 = require("../model/dto/PedidoRequestDto");
 const PedidoService_1 = require("../service/PedidoService");
 const errors_1 = require("../utils/errors");
-const pedidoService = new PedidoService_1.PedidoService();
+const PedidoRepository_1 = require("../repository/PedidoRepository");
+const UsuarioRepository_1 = require("../repository/UsuarioRepository");
+const EnderecoRepository_1 = require("../repository/EnderecoRepository");
+const LivroRepository_1 = require("../repository/LivroRepository");
+async function getPedidoService() {
+    const pedidoRepo = await PedidoRepository_1.PedidoRepository.getInstance();
+    const usuarioRepo = await UsuarioRepository_1.UsuarioRepository.getInstance();
+    const enderecoRepo = await EnderecoRepository_1.EnderecoRepository.getInstance();
+    const livroRepo = await LivroRepository_1.LivroRepository.getInstance();
+    return new PedidoService_1.PedidoService(pedidoRepo, usuarioRepo, enderecoRepo, livroRepo);
+}
 let PedidoController = class PedidoController extends tsoa_1.Controller {
     async criarPedido(dto, fail, success) {
+        if (!dto) {
+            return fail(400, new BasicResponseDto_1.BasicResponseDto("Corpo da requisição (body) é obrigatório e deve conter os dados do pedido.", undefined));
+        }
         try {
+            const pedidoService = await getPedidoService();
             const novoPedidoDto = await pedidoService.criarPedido(dto);
             return success(201, new BasicResponseDto_1.BasicResponseDto("Pedido realizado com sucesso!", novoPedidoDto));
         }
@@ -41,6 +56,7 @@ let PedidoController = class PedidoController extends tsoa_1.Controller {
     }
     async buscarPedidoPorId(id, fail, success) {
         try {
+            const pedidoService = await getPedidoService();
             const pedidoDto = await pedidoService.buscarPedidoPorId(id);
             return success(200, new BasicResponseDto_1.BasicResponseDto("Pedido encontrado com sucesso!", pedidoDto));
         }
@@ -56,6 +72,7 @@ let PedidoController = class PedidoController extends tsoa_1.Controller {
     }
     async listarPedidosPorUsuario(usuarioId, fail, success) {
         try {
+            const pedidoService = await getPedidoService();
             const pedidos = await pedidoService.listarPedidosPorUsuario(usuarioId);
             return success(200, new BasicResponseDto_1.BasicResponseDto("Histórico de pedidos listado com sucesso!", pedidos));
         }
@@ -71,6 +88,7 @@ let PedidoController = class PedidoController extends tsoa_1.Controller {
     }
     async atualizarStatusPedido(id, body, fail, success) {
         try {
+            const pedidoService = await getPedidoService();
             const updatedPedido = await pedidoService.atualizarPedidoStatus(id, body.status);
             return success(200, new BasicResponseDto_1.BasicResponseDto(`Status do pedido ${id} atualizado para ${body.status}`, updatedPedido));
         }

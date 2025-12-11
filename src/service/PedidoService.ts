@@ -16,21 +16,21 @@ type PedidoCreateData = Omit<PedidoModel, 'id' | 'itens'>;
 type ItemPedidoCreateData = Omit<ItemPedidoModel, 'id'>; 
 
 export class PedidoService {
-    private readonly pedidoRepository: PedidoRepository;
-    private readonly usuarioRepository: UsuarioRepository;
-    private readonly enderecoRepository: EnderecoRepository;
-    private readonly livroRepository: LivroRepository;
+    public readonly pedidoRepository: PedidoRepository;
+    public readonly usuarioRepository: UsuarioRepository;
+    public readonly enderecoRepository: EnderecoRepository;
+    public readonly livroRepository: LivroRepository;
 
     constructor(
-        pedidoRepository = PedidoRepository.getInstance(),
-        usuarioRepository = UsuarioRepository.getInstance(),
-        enderecoRepository = EnderecoRepository.getInstance(),
-        livroRepository = LivroRepository.getInstance()
+        pedidoRepository: PedidoRepository,
+        usuarioRepository: UsuarioRepository,
+        enderecoRepository: EnderecoRepository,
+        livroRepository: LivroRepository
     ) {
-        this.pedidoRepository = pedidoRepository as any; 
-        this.usuarioRepository = usuarioRepository as any;
-        this.enderecoRepository = enderecoRepository as any;
-        this.livroRepository = livroRepository as any;
+        this.pedidoRepository = pedidoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.enderecoRepository = enderecoRepository;
+        this.livroRepository = livroRepository;
     }
 
 
@@ -42,16 +42,16 @@ export class PedidoService {
     }
 
     private validarRequest(data: PedidoRequestDto): void {
+        if (!data || typeof data !== 'object') {
+            throw new ValidationError('Dados do pedido são obrigatórios e devem ser um objeto válido.');
+        }
         const { usuario_id, endereco_entrega_id, forma_pagamento, itens } = data;
-
         if (!usuario_id || !endereco_entrega_id || !forma_pagamento || !itens || itens.length === 0) {
             throw new ValidationError('Todos os campos (usuario_id, endereco_entrega_id, forma_pagamento) e a lista de itens são obrigatórios.');
         }
-
         if (itens.some(item => item.quantidade <= 0)) {
             throw new ValidationError('A quantidade de cada item no pedido deve ser um número positivo.');
         }
-
         const formasValidas = Object.values(FormaPagamento);
         if (!formasValidas.includes(forma_pagamento)) {
             throw new ValidationError(`Forma de pagamento inválida. Opções: ${formasValidas.join(', ')}.`);

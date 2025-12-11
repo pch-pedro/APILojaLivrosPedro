@@ -24,11 +24,12 @@ export class CarrinhoController extends Controller {
             return success(201, new BasicResponseDto("Item adicionado/atualizado no carrinho.", itemAtualizado));
             
         } catch (err: any) {
+            console.error(err);
             if (err instanceof NotFoundError) return fail(404, new BasicResponseDto(err.message, undefined));
             if (err instanceof ValidationError) return fail(400, new BasicResponseDto(err.message, undefined));
             if (err instanceof ConflictError) return fail(409, new BasicResponseDto(err.message, undefined));
             
-            return fail(500, new BasicResponseDto("Erro interno ao adicionar item.", undefined));
+            return fail(500, new BasicResponseDto("Erro interno ao adicionar item.", err));
         }
     }
 

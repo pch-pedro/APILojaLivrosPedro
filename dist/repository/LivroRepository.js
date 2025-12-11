@@ -88,7 +88,19 @@ class LivroRepository {
             FROM Livro 
             WHERE id IN (?)
         `;
-        const [rows] = await (0, mysql_1.executarComandoSQL)(query, [ids]);
+        const resultado = await (0, mysql_1.executarComandoSQL)(query, [ids]);
+        // resultado pode ser [rows, fields] ou só rows dependendo de como executarComandoSQL é implementado
+        let rows = [];
+        if (Array.isArray(resultado)) {
+            if (Array.isArray(resultado[0])) {
+                rows = resultado[0]; // padrão mysql2
+            }
+            else {
+                rows = resultado; // se executarComandoSQL já retorna apenas rows
+            }
+        }
+        if (!Array.isArray(rows))
+            rows = [];
         return rows.map(this.mapToModel);
     }
     async validacaoLivroPorId(id) {

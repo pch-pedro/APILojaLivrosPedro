@@ -5,17 +5,24 @@ const LivroModel_1 = require("../model/entity/LivroModel");
 const LivroRepository_1 = require("../repository/LivroRepository");
 const UsuarioRepository_1 = require("../repository/UsuarioRepository");
 const errors_1 = require("../utils/errors");
+const CategoriaRepository_1 = require("../repository/CategoriaRepository");
 class LivroService {
     livroRepository;
     usuarioRepository;
-    constructor(livroRepository = LivroRepository_1.LivroRepository.getInstance(), usuarioRepository = UsuarioRepository_1.UsuarioRepository.getInstance()) {
+    categoriaRepository;
+    constructor(livroRepository = LivroRepository_1.LivroRepository.getInstance(), usuarioRepository = UsuarioRepository_1.UsuarioRepository.getInstance(), categoriaRepository = CategoriaRepository_1.CategoriaRepository.getInstance()) {
         this.livroRepository = livroRepository;
         this.usuarioRepository = usuarioRepository;
+        this.categoriaRepository = categoriaRepository;
     }
     async getLivroRepository() {
         return await this.livroRepository;
     }
     async novoLivro(data) {
+        const categoriaValida = await this.categoriaRepository.listarCategoriaPorId(data.categoria_id);
+        if (categoriaValida === null) {
+            throw new Error("A categoria informada nao existe no sistema");
+        }
         const repo = await this.getLivroRepository();
         const isbn = data.isbn;
         if (!isbn || !repo.validacaoISBN(isbn)) {
@@ -72,8 +79,24 @@ class LivroService {
         const repo = await this.getLivroRepository();
         const id = data.id;
         const novosDados = data.novosDados;
-        if (novosDados.isbn && repo.validacaoISBN(novosDados.isbn) === false) {
-            throw new errors_1.ValidationError("ISBN inválido. Precisa ter 13 dígitos");
+        const livroValido = await repo.filtraLivroPorId(id);
+        if (livroValido === null) {
+            throw new Error("Livro nao encontrado para atualizacao");
+        }
+        if (novosDados.categoria_id !== undefined) {
+            const categoriaValida = await this.categoriaRepository.listarCategoriaPorId(novosDados.categoria_id);
+            if (categoriaValida === null) {
+                throw new Error("A categoria informada nao existe no sistema");
+            }
+        }
+        if (novosDados.isbn !== undefined) {
+            if (novosDados.isbn && repo.validacaoISBN(novosDados.isbn) === false) {
+                throw new errors_1.ValidationError("ISBN inválido. Precisa ter 13 dígitos");
+            }
+            const livroISBNIgual = await repo.filtraLivroPorISBN(novosDados.isbn);
+            if (livroISBNIgual && livroISBNIgual.id !== id) {
+                throw new Error("Este ISBN informado ja está cadastrado em um outro livro");
+            }
         }
         if (novosDados.data_publicacao) {
             novosDados.data_publicacao = new Date(novosDados.data_publicacao);

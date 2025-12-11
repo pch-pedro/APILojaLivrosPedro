@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, Path, Post, Put, Query, Res, Route, Tags
 import type { TsoaResponse } from "tsoa";
 import { BasicResponseDto } from "../model/dto/BasicResponseDto";
 import { LivroRequestDto } from "../model/dto/LivroRequestDto";
+import { LivroUpdateDto } from "../model/dto/LivroUpdateDto";
 
 @Route("livros")
 @Tags("Livro")
@@ -54,7 +55,7 @@ export class LivroController extends Controller{
     @Put("{id}")
     async atualizarLivro(
         @Path() id: number,
-        @Body() dto: LivroRequestDto,
+        @Body() dto: LivroUpdateDto,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,
         @Res() success: TsoaResponse<200, BasicResponseDto>
     ): Promise<void>{

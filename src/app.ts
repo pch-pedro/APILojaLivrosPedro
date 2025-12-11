@@ -2,7 +2,6 @@ import express, { type Express } from 'express';
 import livroRoutes from './routes/livroRoutes.js';
 import categoriaRoutes from './routes/categoriaRoutes.js'
 import { setupSwagger } from './config/swagger.js';
-import pedidoRoutes from './routes/pedidoRoutes.js'
 import itemPedidoRoutes from './routes/itemPedidoRoutes.js'
 import carrinhoRoutes from './routes/carrinhoRoutes.js'
 import cors from 'cors';
@@ -21,8 +20,8 @@ RegisterRoutes(app);
 // Rotas
 app.use('/livros', livroRoutes);
 app.use('/categorias', categoriaRoutes);
-app.use('/pedidos', pedidoRoutes);
-app.use('./item-pedido', itemPedidoRoutes);
+//app.use('/pedidos', pedidoRoutes);
+app.use('/item-pedido', itemPedidoRoutes);
 app.use('/carrinho', carrinhoRoutes);
 
 // Configuração do Swagger

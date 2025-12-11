@@ -198,6 +198,49 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"LivroUpdateDto": {
+				"properties": {
+					"categoria_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"titulo": {
+						"type": "string"
+					},
+					"autor": {
+						"type": "string"
+					},
+					"isbn": {
+						"type": "string"
+					},
+					"preco": {
+						"type": "number",
+						"format": "double"
+					},
+					"estoque": {
+						"type": "number",
+						"format": "double"
+					},
+					"sinopse": {
+						"type": "string"
+					},
+					"imageURL": {
+						"type": "string"
+					},
+					"editora": {
+						"type": "string"
+					},
+					"data_publicacao": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"promocao": {
+						"type": "boolean"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
 			"EnderecoRequestDto": {
 				"properties": {
 					"usuario_id": {
@@ -1166,7 +1209,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/LivroRequestDto"
+								"$ref": "#/components/schemas/LivroUpdateDto"
 							}
 						}
 					}

@@ -153,14 +153,26 @@ export class LivroRepository{
 
     async filtrarLivrosPorIds(ids: number[]): Promise<LivroModel[]> {
         if (ids.length === 0) return [];
-        
+
         const query = `
             SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, imageURL, editora, data_publicacao, promocao 
             FROM Livro 
             WHERE id IN (?)
         `;
-        
-        const [rows] = await executarComandoSQL(query, [ids]) as [RowDataPacket[]];
+
+        const resultado = await executarComandoSQL(query, [ids]);
+
+        // resultado pode ser [rows, fields] ou só rows dependendo de como executarComandoSQL é implementado
+        let rows: any[] = [];
+        if (Array.isArray(resultado)) {
+            if (Array.isArray(resultado[0])) {
+                rows = resultado[0]; // padrão mysql2
+            } else {
+                rows = resultado; // se executarComandoSQL já retorna apenas rows
+            }
+        }
+
+        if (!Array.isArray(rows)) rows = [];
 
         return rows.map(this.mapToModel);
     }
@@ -302,11 +314,4 @@ export class LivroRepository{
         }
         return livros;
     }
-
-
-    //Implementar função validar categoria do livro pelo id da Categoria
-    /*async validacaoLCategoriaId(categoria_id: number): Promise<boolean> {
-        const livro = await this.filtraLivroPorId(id);
-        return livro !== null;
-    }*/
 }
