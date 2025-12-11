@@ -25,7 +25,7 @@ app.use('/carrinho', carrinhoRoutes);
 setupSwagger(app);
 
 app.get('/', (req, res) => {
-    res.redirect('/docs');
+    res.redirect('/api-docs');
 });
 
 
