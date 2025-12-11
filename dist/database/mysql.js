@@ -4,65 +4,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.executarComandoSQL = executarComandoSQL;
-exports.fecharConexao = fecharConexao;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const mysql2_1 = __importDefault(require("mysql2"));
-const dbName = process.env.MYSQLDATABASE || 'lectus_db';
 const dbConfig = {
-    host: process.env.MYSQLHOST || 'localhost',
-    port: Number(process.env.MYSQLPORT || 3306),
-    user: process.env.MYSQLUSER || 'root',
-    password: process.env.MYSQLPASSWORD || 'root'
+    host: process.env.MYSQLHOST,
+    port: Number(process.env.MYSQLPORT),
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE
 };
-// Config para o pool já com database
-const poolConfig = {
-    ...dbConfig,
-    database: dbName,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-};
-let pool = null;
-// Promise que indica quando o pool estiver pronto (após criar o DB se necessário)
-const poolReady = new Promise((resolve, reject) => {
-    const tmpConn = mysql2_1.default.createConnection(dbConfig);
-    // cria o database caso não exista
-    tmpConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`, (err) => {
-        tmpConn.end();
-        if (err) {
-            console.error('Erro ao garantir database:', err);
-            return reject(err);
-        }
-        // agora cria o pool apontando para o database
-        pool = mysql2_1.default.createPool(poolConfig);
-        console.log('Pool MySQL criado e database assegurado:', dbName);
-        resolve();
-    });
+const mysqlConnection = mysql2_1.default.createConnection(dbConfig);
+mysqlConnection.connect((err) => {
+    if (err) {
+        console.error('Erro ao conectar ao banco de dados: ', err);
+        throw err;
+    }
+    console.log('Conexao bem-sucedida com o banco de dados MYSQL');
 });
-async function executarComandoSQL(query, valores = []) {
-    await poolReady;
+function executarComandoSQL(query, valores) {
     return new Promise((resolve, reject) => {
-        if (!pool)
-            return reject(new Error('Pool MySQL não inicializado'));
-        pool.query(query, valores, (err, resultado) => {
+        mysqlConnection.query(query, valores, (err, resultado) => {
             if (err) {
-                console.error('Erro ao executar a query. ', err);
-                return reject(err);
+                console.error('Erro ao executar a query.', err);
+                reject(err);
             }
             resolve(resultado);
-        });
-    });
-}
-async function fecharConexao() {
-    await poolReady;
-    return new Promise((resolve, reject) => {
-        if (!pool)
-            return resolve();
-        pool.end((err) => {
-            if (err)
-                return reject(err);
-            resolve();
         });
     });
 }

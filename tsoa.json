@@ -9,13 +9,13 @@
         "specVersion": 3,
         "spec": {
             "info": {
-                "title": "API Livraria Documentação",
-                "version": "1.0.0",
-                "description": "Documentação da API usando Swagger"
+                "title": "API Livraria Documentação comtestes e etc 1.0",
+                "version": "1.0.2",
+                "description": "Documentação da API usando Swagger para realizacao de testes e etc e tal "
             },
             "servers": [
                 {
-                    "url": "http://localhost:3090/livraria",
+                    "url": "http://localhost:3000",
                     "description": "Servidor de Desenvolvimento"
                 }
             ]

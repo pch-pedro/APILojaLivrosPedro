@@ -1,18 +1,36 @@
 import { executarComandoSQL } from "../database/mysql";
 import { LivroModel } from "../model/entity/LivroModel";
+import { RowDataPacket, OkPacket } from 'mysql2/promise';
 
 export class LivroRepository{
     private static instance: LivroRepository;
 
-    private constructor() {
-        this.criarTable();
-    }
+    private constructor() {}
 
-    public static getInstance(): LivroRepository{
+    public static async getInstance(): Promise<LivroRepository>{
         if(!this.instance){
             this.instance = new LivroRepository();
+            await this.instance.criarTable();
         }
         return this.instance;
+    }
+
+
+    private mapToModel(row: RowDataPacket): LivroModel {
+        return new LivroModel(
+            row.categoria_id, 
+            row.titulo,
+            row.autor, 
+            row.isbn,
+            row.preco,
+            row.estoque,
+            row.sinopse,
+            row.imageURL,
+            row.editora,
+            row.data_publicacao,
+            row.promocao,
+            row.id
+        );
     }
 
     private async criarTable(){
@@ -71,16 +89,17 @@ export class LivroRepository{
 
         return new LivroModel(
             livro.categoria_id, 
-                livro.titulo,
-                livro.autor,
-                livro.isbn,
-                livro.preco,
-                livro.estoque,
-                livro.sinopse,
-                livro.imageURL,
-                livro.editora,
-                livro.data_publicacao,
-                livro.promocao
+            livro.titulo,
+            livro.autor,
+            livro.isbn,
+            livro.preco,
+            livro.estoque,
+            livro.sinopse,
+            livro.imageURL,
+            livro.editora,
+            livro.data_publicacao,
+            livro.promocao,
+            resultado.insertId
         );
     }
     
@@ -95,14 +114,16 @@ export class LivroRepository{
             return new LivroModel(
                 row.categoria_id,
                 row.titulo,
+                row.autor,                
                 row.isbn,
                 row.preco,
                 row.estoque,
                 row.sinopse,
                 row.imageURL,
-                row.autor,
                 row.editora,
-                row.data_publicacao
+                row.data_publicacao,
+                row.promocao,
+                row.id
             );
         }
         return null;
@@ -115,17 +136,45 @@ export class LivroRepository{
             return new LivroModel(
                 user.categoria_id,
                 user.titulo,
+                user.autor,                
                 user.isbn,
                 user.preco,
                 user.estoque,
                 user.sinopse,
                 user.imageURL,
-                user.autor,
                 user.editora,
-                user.data_publicacao
+                user.data_publicacao,
+                user.promocao,
+                user.id
             );
         }
         return null;
+    }
+
+    async filtrarLivrosPorIds(ids: number[]): Promise<LivroModel[]> {
+        if (ids.length === 0) return [];
+
+        const query = `
+            SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, imageURL, editora, data_publicacao, promocao 
+            FROM Livro 
+            WHERE id IN (?)
+        `;
+
+        const resultado = await executarComandoSQL(query, [ids]);
+
+        // resultado pode ser [rows, fields] ou só rows dependendo de como executarComandoSQL é implementado
+        let rows: any[] = [];
+        if (Array.isArray(resultado)) {
+            if (Array.isArray(resultado[0])) {
+                rows = resultado[0]; // padrão mysql2
+            } else {
+                rows = resultado; // se executarComandoSQL já retorna apenas rows
+            }
+        }
+
+        if (!Array.isArray(rows)) rows = [];
+
+        return rows.map(this.mapToModel);
     }
 
     async validacaoLivroPorId(id: number): Promise<boolean> {
@@ -139,13 +188,13 @@ export class LivroRepository{
     }
 
     async removeLivroPorId(id: number): Promise<LivroModel | null>{
-       const livro = await this.filtraLivroPorId(id);
-       if(!livro){
+        const livro = await this.filtraLivroPorId(id);
+        if(!livro){
             return null;
-       }
+        }
 
-    await executarComandoSQL("DELETE FROM Livro where id = ?", [id]);
-       return livro;
+        await executarComandoSQL("DELETE FROM Livro where id = ?", [id]);
+        return livro;
     }
 
     async atualizarLivroPorId(id: number, novosDados: any): Promise<LivroModel | null>{
@@ -167,12 +216,26 @@ export class LivroRepository{
             valores.push(novosDados.autor);
         }
 
+        if(novosDados.isbn){
+            if(this.validacaoISBN(novosDados.isbn) === false){
+                throw new Error("ISBN invalida. Precisa ter 13 digitos");
+            }
+
+            const existente = await this.filtraLivroPorISBN(novosDados.isbn);
+            if(existente && existente.id !== id){
+                throw new Error("Ja existe outro livro com este ISBN");
+            }
+            
+            campos.push("isbn = ?");
+            valores.push(novosDados.isbn)
+        }
+
         if(novosDados.preco){
             campos.push("preco = ?");
             valores.push(novosDados.preco);
         }
 
-        if(novosDados.estoque){
+        if(novosDados.estoque !== undefined){
             campos.push("estoque = ?");
             valores.push(novosDados.estoque);
         }
@@ -197,7 +260,7 @@ export class LivroRepository{
             valores.push(novosDados.data_publicacao);
         }
 
-        if(novosDados.promocao){
+        if(novosDados.promocao !== undefined){
             campos.push("promocao = ?");
             valores.push(novosDados.promocao);
         }
@@ -215,6 +278,17 @@ export class LivroRepository{
         return await this.filtraLivroPorId(id);
     }
 
+    async atualizarEstoque(id: number, delta: number): Promise<boolean> {
+        const query = `
+            UPDATE Livro
+            SET estoque = estoque + ?
+            WHERE id = ?
+        `;
+        const resultado: OkPacket = await executarComandoSQL(query, [delta, id]) as OkPacket;
+        
+        return resultado.affectedRows > 0;
+    }
+
     async listarLivros(): Promise<LivroModel[]>{
         //Validação Adicionada: Retornando os livros por ordem alfabética e apenas se seu estoque for maior que zero.
         const resultado = await executarComandoSQL("SELECT * FROM Livro WHERE estoque > 0 ORDER BY titulo ASC", []);
@@ -225,24 +299,19 @@ export class LivroRepository{
                 livros.push(new LivroModel(
                     user.categoria_id,
                     user.titulo,
+                    user.autor,                
                     user.isbn,
                     user.preco,
                     user.estoque,
                     user.sinopse,
                     user.imageURL,
-                    user.autor,
                     user.editora,
-                    user.data_publicacao
+                    user.data_publicacao,
+                    user.promocao,
+                    user.id
                 ));
             }
         }
         return livros;
     }
-
-
-    //Implementar função validar categoria do livro pelo id da Categoria
-    /*async validacaoLCategoriaId(categoria_id: number): Promise<boolean> {
-        const livro = await this.filtraLivroPorId(id);
-        return livro !== null;
-    }*/
 }

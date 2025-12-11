@@ -2,16 +2,17 @@ import { LivroService } from "../service/LivroService";
 import { Body, Controller, Delete, Get, Path, Post, Put, Query, Res, Route, Tags } from "tsoa";
 import type { TsoaResponse } from "tsoa";
 import { BasicResponseDto } from "../model/dto/BasicResponseDto";
-import { LivroDto } from "../model/dto/LivroDto";
+import { LivroRequestDto } from "../model/dto/LivroRequestDto";
+import { LivroUpdateDto } from "../model/dto/LivroUpdateDto";
 
-@Route("livro")
+@Route("livros")
 @Tags("Livro")
 export class LivroController extends Controller{
     livroService = new LivroService();
 
     @Post()
     async criarLivro(
-        @Body() dto: LivroDto,
+        @Body() dto: LivroRequestDto,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,
         @Res() success: TsoaResponse<201, BasicResponseDto>
     ): Promise<void>{
@@ -42,7 +43,7 @@ export class LivroController extends Controller{
         @Path() id: number,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,
         @Res() success: TsoaResponse<200, BasicResponseDto>
-    ): Promise<LivroDto>{
+    ): Promise<void>{
         try{
             const livroEncontrado = await this.livroService.filtrarLivro({id});
             return success(200, new BasicResponseDto("Livro encontrado com sucesso!", livroEncontrado));
@@ -54,12 +55,11 @@ export class LivroController extends Controller{
     @Put("{id}")
     async atualizarLivro(
         @Path() id: number,
-        @Body() dto: LivroDto,
+        @Body() dto: LivroUpdateDto,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,
         @Res() success: TsoaResponse<200, BasicResponseDto>
     ): Promise<void>{
         try{
-            dto.id = id;
             const livroAtualizado = await this.livroService.atualizaLivro({
                 id: id,
                 novosDados: dto
@@ -76,7 +76,7 @@ export class LivroController extends Controller{
         @Path() id: number,
         @Res() fail: TsoaResponse<400, BasicResponseDto>,
         @Res() success: TsoaResponse<200, BasicResponseDto>
-    ){
+    ): Promise<void>{
         try{
            const livroRemovido = await this.livroService.removeLivro(id);
            return success(200, new BasicResponseDto("Livro Removido com sucesso!", livroRemovido));

@@ -1,31 +1,42 @@
-import express, { type Express } from 'express';
+import express from 'express';
+import cors from 'cors';
+import { setupSwagger } from './config/swagger.js';
 import livroRoutes from './routes/livroRoutes.js';
-import usuarioRoutes from './routes/usuarioRoutes.js';
+import categoriaRoutes from './routes/categoriaRoutes.js';
+import itemPedidoRoutes from './routes/itemPedidoRoutes.js';
+import carrinhoRoutes from './routes/carrinhoRoutes.js';
+import { RegisterRoutes } from './route/routes.js';
 
-const app: Express = express();
-const PORT = process.env.PORT || 3000;
+// IMPORTANTE 👇
+import { inicializarTabelas } from './database/databaseInit.js';
 
-// Middleware
+const app = express();
+
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+RegisterRoutes(app);
 
-// Health check
+app.use('/livros', livroRoutes);
+app.use('/categorias', categoriaRoutes);
+app.use('/item-pedido', itemPedidoRoutes);
+app.use('/carrinho', carrinhoRoutes);
+
+setupSwagger(app);
+
 app.get('/health', (req, res) => {
     res.json({ status: 'API em funcionamento', timestamp: new Date() });
 });
 
-// Rotas
-app.use('/livros', livroRoutes);
-app.use('/usuarios', usuarioRoutes);
+const port = process.env.PORT || 3000;
 
-// 404 para rotas não encontradas
-app.use((req, res) => {
-    res.status(404).json({ error: 'Rota não encontrada' });
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+// 🚀 CHAMAR ANTES DE INICIAR O SERVIDOR
+inicializarTabelas().then(() => {
+    app.listen(port, () => {
+        console.log("Servidor rodando na porta " + port);
+    });
+}).catch((err) => {
+    console.error("Erro ao inicializar tabelas:", err);
 });
 
 export default app;

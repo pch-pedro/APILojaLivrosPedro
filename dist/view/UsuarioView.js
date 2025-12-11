@@ -4,11 +4,11 @@ exports.UsuarioView = void 0;
 class UsuarioView {
     static formatarUsuario(usuario) {
         return {
-            id: usuario.getId(),
-            nome: usuario.getNome(),
-            email: usuario.getEmail(),
-            telefone: usuario.getTelefone(),
-            tipo_usuario: usuario.getTipoUsuario()
+            id: usuario.id,
+            nome: usuario.nome,
+            email: usuario.email,
+            telefone: usuario.telefone,
+            tipo_usuario: usuario.tipo_usuario
             // não retornar senha_hash
         };
     }

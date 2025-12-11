@@ -16,7 +16,8 @@ exports.LivroController = void 0;
 const LivroService_1 = require("../service/LivroService");
 const tsoa_1 = require("tsoa");
 const BasicResponseDto_1 = require("../model/dto/BasicResponseDto");
-const LivroDto_1 = require("../model/dto/LivroDto");
+const LivroRequestDto_1 = require("../model/dto/LivroRequestDto");
+const LivroUpdateDto_1 = require("../model/dto/LivroUpdateDto");
 let LivroController = class LivroController extends tsoa_1.Controller {
     livroService = new LivroService_1.LivroService();
     async criarLivro(dto, fail, success) {
@@ -49,7 +50,6 @@ let LivroController = class LivroController extends tsoa_1.Controller {
     }
     async atualizarLivro(id, dto, fail, success) {
         try {
-            dto.id = id;
             const livroAtualizado = await this.livroService.atualizaLivro({
                 id: id,
                 novosDados: dto
@@ -77,7 +77,7 @@ __decorate([
     __param(1, (0, tsoa_1.Res)()),
     __param(2, (0, tsoa_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [LivroDto_1.LivroDto, Function, Function]),
+    __metadata("design:paramtypes", [LivroRequestDto_1.LivroRequestDto, Function, Function]),
     __metadata("design:returntype", Promise)
 ], LivroController.prototype, "criarLivro", null);
 __decorate([
@@ -104,7 +104,7 @@ __decorate([
     __param(2, (0, tsoa_1.Res)()),
     __param(3, (0, tsoa_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, LivroDto_1.LivroDto, Function, Function]),
+    __metadata("design:paramtypes", [Number, LivroUpdateDto_1.LivroUpdateDto, Function, Function]),
     __metadata("design:returntype", Promise)
 ], LivroController.prototype, "atualizarLivro", null);
 __decorate([
@@ -117,6 +117,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], LivroController.prototype, "removerLivro", null);
 exports.LivroController = LivroController = __decorate([
-    (0, tsoa_1.Route)("livro"),
+    (0, tsoa_1.Route)("livros"),
     (0, tsoa_1.Tags)("Livro")
 ], LivroController);
