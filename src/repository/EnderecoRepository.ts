@@ -45,7 +45,13 @@ export class EnderecoRepository {
                 estado VARCHAR(50) NOT NULL,
                 FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
             )ENGINE=InnoDB`;
-        await executarComandoSQL(query, []);
+        try {
+            await executarComandoSQL(query, []);
+            console.log("Tabela Usuario criada com sucesso.");
+        } catch (err) {
+            console.error("Erro ao criar tabela Usuário:", err);
+            throw err;
+        }
     }
 
 
