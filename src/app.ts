@@ -24,6 +24,11 @@ app.use('/carrinho', carrinhoRoutes);
 
 setupSwagger(app);
 
+app.get('/', (req, res) => {
+    res.redirect('/docs');
+});
+
+
 app.get('/health', (req, res) => {
     res.json({ status: 'API em funcionamento', timestamp: new Date() });
 });
