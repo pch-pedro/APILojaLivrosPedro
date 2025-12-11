@@ -50,13 +50,15 @@ export class PedidoRepository {
             CREATE TABLE IF NOT EXISTS Pedido (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 usuario_id INT NOT NULL,
+                endereco_entrega_id INT NOT NULL,
                 data_pedido DATETIME NOT NULL, 
                 valor_total DECIMAL(10,2) NOT NULL,
                 status_pedido ENUM('PENDENTE', 'PROCESSANDO', 'ENVIADO', 'ENTREGUE', 'CANCELADO') NOT NULL,
                 -- NOVO CAMPO COM ENUM
                 forma_pagamento ENUM('PIX', 'CARTAO_CREDITO', 'BOLETO', 'TRANSFERENCIA') NOT NULL,
-                FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
-            )`;
+                FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
+                FOREIGN KEY (endereco_entrega_id) REFERENCES Endereco(id)
+            )ENGINE=InnoDB`;
         try {
             await executarComandoSQL(query, []);
         } catch (err) {
