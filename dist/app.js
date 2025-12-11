@@ -23,16 +23,17 @@ app.use('/categorias', categoriaRoutes_js_1.default);
 app.use('/item-pedido', itemPedidoRoutes_js_1.default);
 app.use('/carrinho', carrinhoRoutes_js_1.default);
 (0, swagger_js_1.setupSwagger)(app);
+app.get('/', (req, res) => {
+    res.redirect('/docs');
+});
 app.get('/health', (req, res) => {
     res.json({ status: 'API em funcionamento', timestamp: new Date() });
 });
 const port = process.env.PORT || 8080;
-// 🚀 CHAMAR ANTES DE INICIAR O SERVIDOR
-(0, databaseInit_js_1.inicializarTabelas)().then(() => {
-    app.listen(port, () => {
-        console.log("Servidor rodando na porta " + port);
-    });
-}).catch((err) => {
-    console.error("Erro ao inicializar tabelas:", err);
+app.listen(port, () => {
+    console.log("Servidor rodando na porta " + port);
+    (0, databaseInit_js_1.inicializarTabelas)()
+        .then(() => console.log("Tabelas inicializadas"))
+        .catch(err => console.error("Erro ao inicializar tabelas:", err));
 });
 exports.default = app;
