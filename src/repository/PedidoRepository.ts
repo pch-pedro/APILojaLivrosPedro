@@ -61,7 +61,7 @@ export class PedidoRepository {
             forma_pagamento ENUM('PIX', 'CARTAO_CREDITO', 'BOLETO', 'TRANSFERENCIA') NOT NULL,
             FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
             FOREIGN KEY (endereco_entrega_id) REFERENCES Endereco(id)
-            ) ENGINE=InnoDB`;
+            ) ENGINE=InnoDB;`;
         try {
             await executarComandoSQL(query, []);
         } catch (err) {
@@ -81,6 +81,7 @@ export class PedidoRepository {
             preco_unitario_pago DECIMAL(10,2) NOT NULL,
             FOREIGN KEY (pedido_id) REFERENCES Pedido(id) ON DELETE CASCADE,
             FOREIGN KEY (livro_id) REFERENCES Livro(id)
+        ) ENGINE=InnoDB;
         `;
         await executarComandoSQL(query, []);
     }
