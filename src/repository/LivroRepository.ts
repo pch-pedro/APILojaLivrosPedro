@@ -68,6 +68,18 @@ export class LivroRepository{
             // Ignora se o nome já estiver correto ou se a coluna não existir.
             console.warn('AVISO: Falha na alteração da coluna status. Verificar esquema.');
         }
+        const addPromocaoQuery = `
+            ALTER TABLE Livro
+            ADD COLUMN promocao BOOLEAN DEFAULT FALSE;
+        `;
+        try {
+            await executarComandoSQL(addPromocaoQuery, []);
+            console.log('SUCESSO: Coluna promocao adicionada.');
+        } catch (err: any) {
+            if (!err.message.includes("Duplicate column name")) {
+                 console.warn('AVISO: Falha ao adicionar a coluna promocao. Verificar esquema.');
+            }
+        }
     }
 
     async insereLivro(livro: LivroModel): Promise<LivroModel>{
