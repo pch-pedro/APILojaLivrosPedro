@@ -25,7 +25,7 @@ export class LivroRepository{
             row.preco,
             row.estoque,
             row.sinopse,
-            row.imageURL,
+            row.image_url,
             row.editora,
             row.data_publicacao,
             row.promocao,
@@ -43,7 +43,7 @@ export class LivroRepository{
                 preco DECIMAL(10,2) NOT NULL,
                 estoque INT NOT NULL,
                 sinopse TEXT,
-                imageURL VARCHAR(255),
+                image_url VARCHAR(255),
                 editora VARCHAR(255) NOT NULL,
                 data_publicacao DATE,
                 promocao BOOLEAN DEFAULT FALSE
@@ -70,7 +70,7 @@ export class LivroRepository{
         }
 
         const resultado = await executarComandoSQL(
-            "INSERT INTO Livro (categoria_id, titulo, autor, isbn, preco, estoque, sinopse, imageURL, editora, data_publicacao, promocao) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Livro (categoria_id, titulo, autor, isbn, preco, estoque, sinopse, image_url, editora, data_publicacao, promocao) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 livro.categoria_id, 
                 livro.titulo,
@@ -79,7 +79,7 @@ export class LivroRepository{
                 livro.preco,
                 livro.estoque,
                 livro.sinopse,
-                livro.imageURL,
+                livro.image_url,
                 livro.editora,
                 livro.data_publicacao,
                 livro.promocao
@@ -95,7 +95,7 @@ export class LivroRepository{
             livro.preco,
             livro.estoque,
             livro.sinopse,
-            livro.imageURL,
+            livro.image_url,
             livro.editora,
             livro.data_publicacao,
             livro.promocao,
@@ -119,7 +119,7 @@ export class LivroRepository{
                 row.preco,
                 row.estoque,
                 row.sinopse,
-                row.imageURL,
+                row.image_url,
                 row.editora,
                 row.data_publicacao,
                 row.promocao,
@@ -141,7 +141,7 @@ export class LivroRepository{
                 user.preco,
                 user.estoque,
                 user.sinopse,
-                user.imageURL,
+                user.image_url,
                 user.editora,
                 user.data_publicacao,
                 user.promocao,
@@ -155,7 +155,7 @@ export class LivroRepository{
         if (ids.length === 0) return [];
 
         const query = `
-            SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, imageURL, editora, data_publicacao, promocao 
+            SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, image_url, editora, data_publicacao, promocao 
             FROM Livro 
             WHERE id IN (?)
         `;
@@ -245,9 +245,9 @@ export class LivroRepository{
             valores.push(novosDados.sinopse);
         }
 
-        if(novosDados.imageURL){
-            campos.push("imageURL = ?");
-            valores.push(novosDados.imageURL);
+        if(novosDados.image_url){
+            campos.push("image_url = ?");
+            valores.push(novosDados.image_url);
         }
 
         if(novosDados.editora){
@@ -304,7 +304,7 @@ export class LivroRepository{
                     user.preco,
                     user.estoque,
                     user.sinopse,
-                    user.imageURL,
+                    user.image_url,
                     user.editora,
                     user.data_publicacao,
                     user.promocao,
