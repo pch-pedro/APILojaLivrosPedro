@@ -84,7 +84,7 @@ export class PedidoRepository {
             FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
             FOREIGN KEY (endereco_entrega_id) REFERENCES Endereco(id)
             ) ENGINE=InnoDB
-        )`;
+        `;
         await executarComandoSQL(query, []);
     }
 

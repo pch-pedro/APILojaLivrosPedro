@@ -58,7 +58,7 @@ class PedidoRepository {
             FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
             FOREIGN KEY (endereco_entrega_id) REFERENCES Endereco(id)
             ) ENGINE=InnoDB
-        )`;
+        `;
         await (0, mysql_1.executarComandoSQL)(query, []);
     }
     async inserirPedido(pedidoData, itensData) {
