@@ -15,7 +15,6 @@ export class LivroRepository{
         return this.instance;
     }
 
-
     private mapToModel(row: RowDataPacket): LivroModel {
         return new LivroModel(
             row.categoria_id, 
@@ -25,7 +24,7 @@ export class LivroRepository{
             row.preco,
             row.estoque,
             row.sinopse,
-            row.image_url,
+            row.imageURL, 
             row.editora,
             row.data_publicacao,
             row.promocao,
@@ -34,32 +33,46 @@ export class LivroRepository{
     }
 
     private async criarTable(){
-        const query = `CREATE TABLE IF NOT EXISTS Livro(
+        const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS Livro(
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 categoria_id INT NOT NULL,
                 titulo VARCHAR(255) NOT NULL,
-                autor VARCHAR(255) NOT NULL,                
+                autor VARCHAR(255) NOT NULL,              
                 isbn VARCHAR(13) NOT NULL UNIQUE,
                 preco DECIMAL(10,2) NOT NULL,
                 estoque INT NOT NULL,
                 sinopse TEXT,
-                image_url VARCHAR(255),
+                imageURL VARCHAR(255),  <--- Criando com o nome final
                 editora VARCHAR(255) NOT NULL,
                 data_publicacao DATE,
                 promocao BOOLEAN DEFAULT FALSE
-                )ENGINE=InnoDB`;
+            )ENGINE=InnoDB
+        `;
 
         try{
-            const resultado = await executarComandoSQL(query, []);
-            console.log('Tabela de Livro criada com Sucesso!', resultado);
+            await executarComandoSQL(createTableQuery, []);
+            console.log('Tabela de Livro criada/verificada com Sucesso!');
         } catch(err){
-            console.error('Erro ao executar a query de livro: ', err);
+            console.error('Erro ao executar CREATE TABLE: ', err);
+        }
+
+        const alterQuery = `
+            ALTER TABLE Livro
+            CHANGE COLUMN image_url imageURL VARCHAR(255);
+        `;
+        try {
+            await executarComandoSQL(alterQuery, []);
+            console.log('SUCESSO: Coluna image_url renomeada para imageURL.');
+        } catch (err: any) {
+            if (!err.message.includes("Unknown column 'image_url'")) {
+                 console.warn('AVISO: Falha na alteração da coluna. Verifique se o nome já é imageURL.', err.message);
+            }
         }
     }
 
     async insereLivro(livro: LivroModel): Promise<LivroModel>{
 
-        //Validação Adicionada: Verificando se já há um livro com o mesmo título e ISBN no sistema
         const resultadoExistente = await executarComandoSQL(
             "SELECT * FROM Livro WHERE titulo = ? AND isbn = ?",
             [livro.titulo, livro.isbn]
@@ -70,7 +83,7 @@ export class LivroRepository{
         }
 
         const resultado = await executarComandoSQL(
-            "INSERT INTO Livro (categoria_id, titulo, autor, isbn, preco, estoque, sinopse, image_url, editora, data_publicacao, promocao) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Livro (categoria_id, titulo, autor, isbn, preco, estoque, sinopse, imageURL, editora, data_publicacao, promocao) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 livro.categoria_id, 
                 livro.titulo,
@@ -79,12 +92,12 @@ export class LivroRepository{
                 livro.preco,
                 livro.estoque,
                 livro.sinopse,
-                livro.image_url,
+                livro.imageURL,
                 livro.editora,
                 livro.data_publicacao,
                 livro.promocao
             ]);
-        
+            
             console.log("Livro criado com Sucesso: ", resultado);
 
         return new LivroModel(
@@ -95,7 +108,7 @@ export class LivroRepository{
             livro.preco,
             livro.estoque,
             livro.sinopse,
-            livro.image_url,
+            livro.imageURL,
             livro.editora,
             livro.data_publicacao,
             livro.promocao,
@@ -110,21 +123,7 @@ export class LivroRepository{
     async filtraLivroPorISBN(isbn: string): Promise<LivroModel | null>{
         const resultado = await executarComandoSQL("SELECT * FROM Livro WHERE isbn = ? LIMIT 1", [isbn]);
         if(resultado && resultado.length > 0){
-            const row = resultado[0];
-            return new LivroModel(
-                row.categoria_id,
-                row.titulo,
-                row.autor,                
-                row.isbn,
-                row.preco,
-                row.estoque,
-                row.sinopse,
-                row.image_url,
-                row.editora,
-                row.data_publicacao,
-                row.promocao,
-                row.id
-            );
+            return this.mapToModel(resultado[0]);
         }
         return null;
     }
@@ -132,21 +131,7 @@ export class LivroRepository{
     async filtraLivroPorId(id: number): Promise<LivroModel | null>{
         const resultado = await executarComandoSQL("SELECT * FROM Livro WHERE id = ?", [id]);
         if(resultado && resultado.length > 0) {
-            const user = resultado[0];
-            return new LivroModel(
-                user.categoria_id,
-                user.titulo,
-                user.autor,                
-                user.isbn,
-                user.preco,
-                user.estoque,
-                user.sinopse,
-                user.image_url,
-                user.editora,
-                user.data_publicacao,
-                user.promocao,
-                user.id
-            );
+            return this.mapToModel(resultado[0]);
         }
         return null;
     }
@@ -154,25 +139,23 @@ export class LivroRepository{
     async filtrarLivrosPorIds(ids: number[]): Promise<LivroModel[]> {
         if (ids.length === 0) return [];
 
+        const placeholders = ids.map(() => '?').join(',');
         const query = `
-            SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, image_url, editora, data_publicacao, promocao 
+            SELECT id, titulo, preco, estoque, autor, categoria_id, isbn, sinopse, imageURL, editora, data_publicacao, promocao 
             FROM Livro 
-            WHERE id IN (?)
+            WHERE id IN (${placeholders})
         `;
 
-        const resultado = await executarComandoSQL(query, [ids]);
+        const resultado = await executarComandoSQL(query, ids);
 
-        // resultado pode ser [rows, fields] ou só rows dependendo de como executarComandoSQL é implementado
         let rows: any[] = [];
         if (Array.isArray(resultado)) {
             if (Array.isArray(resultado[0])) {
-                rows = resultado[0]; // padrão mysql2
+                rows = resultado[0];
             } else {
-                rows = resultado; // se executarComandoSQL já retorna apenas rows
+                rows = resultado; 
             }
         }
-
-        if (!Array.isArray(rows)) rows = [];
 
         return rows.map(this.mapToModel);
     }
@@ -245,9 +228,9 @@ export class LivroRepository{
             valores.push(novosDados.sinopse);
         }
 
-        if(novosDados.imageURL){
-            campos.push("image_url = ?");
-            valores.push(novosDados.image_url);
+        if(novosDados.imageURL){ 
+            campos.push("imageURL = ?"); 
+            valores.push(novosDados.imageURL);
         }
 
         if(novosDados.editora){
@@ -272,8 +255,7 @@ export class LivroRepository{
         const sql = `UPDATE Livro SET ${campos.join(", ")} WHERE id = ?`;
         valores.push(id);
 
-        const resultado = await executarComandoSQL(sql, valores);
-        console.log(resultado);
+        await executarComandoSQL(sql, valores);
 
         return await this.filtraLivroPorId(id);
     }
@@ -290,26 +272,11 @@ export class LivroRepository{
     }
 
     async listarLivros(): Promise<LivroModel[]>{
-        //Validação Adicionada: Retornando os livros por ordem alfabética e apenas se seu estoque for maior que zero.
         const resultado = await executarComandoSQL("SELECT * FROM Livro WHERE estoque > 0 ORDER BY titulo ASC", []);
         const livros: LivroModel[] = [];
         if(resultado && resultado.length > 0){
             for(let i = 0; i < resultado.length; i++){
-                const user = resultado[i];
-                livros.push(new LivroModel(
-                    user.categoria_id,
-                    user.titulo,
-                    user.autor,                
-                    user.isbn,
-                    user.preco,
-                    user.estoque,
-                    user.sinopse,
-                    user.image_url,
-                    user.editora,
-                    user.data_publicacao,
-                    user.promocao,
-                    user.id
-                ));
+                livros.push(this.mapToModel(resultado[i]));
             }
         }
         return livros;
