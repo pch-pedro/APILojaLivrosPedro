@@ -26,7 +26,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc && cp src/config/swagger.json dist/config/swagger.json",
+    "build": "npx tsoa spec && npx tsc",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
