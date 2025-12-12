@@ -133,13 +133,21 @@ export class PedidoRepository {
             WHERE usuario_id = ?
             ORDER BY data_pedido DESC
         `;
-        try {
-            const [rows] = await executarComandoSQL(query, [usuarioId]) as [RowDataPacket[]];
-            return rows.map(this.mapPedidoToModel);
-        } catch (err) {
-            console.error("Erro ao listar pedidos por Usuario ID no repositório:", err);
-            throw err;
+        
+        const [rows] = await executarComandoSQL(query, [usuarioId]) as [RowDataPacket[]];
+        const pedidos = rows.map(this.mapPedidoToModel);
+        
+        for(const pedido of pedidos){
+            const itemQuery = `
+                SELECT id, pedido_id, livro_id, quantidade, preco_unitario_pago
+                FROM ItemPedido
+                WHERE pedido_id = ?
+            `;
+
+            const [itemRows] = await executarComandoSQL(itemQuery, [pedido.id]) as [RowDataPacket[]];
+            pedido.itens = itemRows.map(this.mapItemPedidoToModel);
         }
+        return pedidos;
     }
     
     async buscarPorId(id: number): Promise<PedidoModel> {

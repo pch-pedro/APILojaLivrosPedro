@@ -96,14 +96,18 @@ class PedidoRepository {
             WHERE usuario_id = ?
             ORDER BY data_pedido DESC
         `;
-        try {
-            const [rows] = await (0, mysql_1.executarComandoSQL)(query, [usuarioId]);
-            return rows.map(this.mapPedidoToModel);
+        const [rows] = await (0, mysql_1.executarComandoSQL)(query, [usuarioId]);
+        const pedidos = rows.map(this.mapPedidoToModel);
+        for (const pedido of pedidos) {
+            const itemQuery = `
+                SELECT id, pedido_id, livro_id, quantidade, preco_unitario_pago
+                FROM ItemPedido
+                WHERE pedido_id = ?
+            `;
+            const [itemRows] = await (0, mysql_1.executarComandoSQL)(itemQuery, [pedido.id]);
+            pedido.itens = itemRows.map(this.mapItemPedidoToModel);
         }
-        catch (err) {
-            console.error("Erro ao listar pedidos por Usuario ID no repositório:", err);
-            throw err;
-        }
+        return pedidos;
     }
     async buscarPorId(id) {
         const queryPedido = `
