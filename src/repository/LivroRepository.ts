@@ -57,17 +57,16 @@ export class LivroRepository{
             console.error('Erro ao executar CREATE TABLE: ', err);
         }
 
-        const alterQuery = `
+        const alterStatusQuery = `
             ALTER TABLE Livro
-            CHANGE COLUMN image_url imageURL VARCHAR(255);
+            CHANGE COLUMN status editora VARCHAR(255) NOT NULL;
         `;
         try {
-            await executarComandoSQL(alterQuery, []);
-            console.log('SUCESSO: Coluna image_url renomeada para imageURL.');
+            await executarComandoSQL(alterStatusQuery, []);
+            console.log('SUCESSO: Coluna status renomeada para editora.');
         } catch (err: any) {
-            if (!err.message.includes("Unknown column 'image_url'")) {
-                 console.warn('AVISO: Falha na alteração da coluna. Verifique se o nome já é imageURL.', err.message);
-            }
+            // Ignora se o nome já estiver correto ou se a coluna não existir.
+            console.warn('AVISO: Falha na alteração da coluna status. Verificar esquema.');
         }
     }
 
