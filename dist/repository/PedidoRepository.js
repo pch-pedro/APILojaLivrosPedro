@@ -22,8 +22,6 @@ class PedidoRepository {
         return new ItemPedidoModel_1.ItemPedidoModel(row.pedido_id, row.livro_id, row.quantidade, row.preco_unitario_pago, row.id);
     }
     async createTable() {
-        await (0, mysql_1.executarComandoSQL)(`DROP TABLE IF EXISTS ItemPedido`, []);
-        await (0, mysql_1.executarComandoSQL)(`DROP TABLE IF EXISTS Pedido`, []);
         const query = `
             CREATE TABLE IF NOT EXISTS Pedido (
             id INT AUTO_INCREMENT PRIMARY KEY,

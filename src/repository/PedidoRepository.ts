@@ -48,8 +48,6 @@ export class PedidoRepository {
     
 
     public async createTable(): Promise<void> {
-        await executarComandoSQL(`DROP TABLE IF EXISTS ItemPedido`, []);
-        await executarComandoSQL(`DROP TABLE IF EXISTS Pedido`, []);
         const query = `
             CREATE TABLE IF NOT EXISTS Pedido (
             id INT AUTO_INCREMENT PRIMARY KEY,
