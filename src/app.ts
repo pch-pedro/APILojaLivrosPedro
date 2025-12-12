@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { RegisterRoutes } from './route/routes.js';
-import { setupSwagger } from './swagger.js';
+import { setupSwagger } from './config/swagger.js';
 import { inicializarTabelas } from './database/databaseInit.js';
 
 const app = express();
