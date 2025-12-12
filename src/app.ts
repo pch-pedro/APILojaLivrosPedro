@@ -1,55 +1,29 @@
 import express from 'express';
 import cors from 'cors';
-import { setupSwagger } from './config/swagger.js';
-import livroRoutes from './routes/livroRoutes.js';
-import categoriaRoutes from './routes/categoriaRoutes.js';
-import itemPedidoRoutes from './routes/itemPedidoRoutes.js';
-import carrinhoRoutes from './routes/carrinhoRoutes.js';
 import { RegisterRoutes } from './route/routes.js';
-
-// IMPORTANTE 👇
+import { setupSwagger } from './swagger.js';
 import { inicializarTabelas } from './database/databaseInit.js';
 
 const app = express();
 
-app.use(cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    credentials: false
-}));
-
-app.options(/.*/, cors());
-
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Swagger do TSOA
 setupSwagger(app);
+
+// Rotas automáticas do TSOA
 RegisterRoutes(app);
 
-app.use('/livros', livroRoutes);
-app.use('/categorias', categoriaRoutes);
-app.use('/item-pedido', itemPedidoRoutes);
-app.use('/carrinho', carrinhoRoutes);
-
-app.get('/', (req, res) => {
-    res.redirect('/api-docs');
-});
-
-
-app.get('/health', (req, res) => {
-    res.json({ status: 'API em funcionamento', timestamp: new Date() });
-});
+// Health
+app.get('/health', (req, res) => res.json({ ok: true }));
 
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
-    console.log("Servidor rodando na porta " + port);
-
-    inicializarTabelas()
-        .then(() => console.log("Tabelas inicializadas"))
-        .catch(err => console.error("Erro ao inicializar tabelas:", err));
+    console.log(`Servidor rodando na porta ${port}`);
+    inicializarTabelas();
 });
-
 
 export default app;
