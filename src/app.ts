@@ -6,22 +6,14 @@ import { inicializarTabelas } from './database/databaseInit.js';
 
 const app = express();
 
-const DOMINIO_VERCEL = process.env.VERCEL_FRONTEND_URL || "http://lectus.vercel.app/";
+const DOMINIO_VERCEL = process.env.VERCEL_FRONTEND_URL || "https://lectus.vercel.app";
 
 app.use(cors({
     origin: DOMINIO_VERCEL, 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ['Content-Type', 'Authorization'], 
-    credentials: true /
+    credentials: true
 }));
-
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
-  }
-  next();
-});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
