@@ -23,12 +23,12 @@ app.use((0, cors_1.default)({
 app.options(/.*/, (0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+(0, swagger_js_1.setupSwagger)(app);
 (0, routes_js_1.RegisterRoutes)(app);
 app.use('/livros', livroRoutes_js_1.default);
 app.use('/categorias', categoriaRoutes_js_1.default);
 app.use('/item-pedido', itemPedidoRoutes_js_1.default);
 app.use('/carrinho', carrinhoRoutes_js_1.default);
-(0, swagger_js_1.setupSwagger)(app);
 app.get('/', (req, res) => {
     res.redirect('/api-docs');
 });

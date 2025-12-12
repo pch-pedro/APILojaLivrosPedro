@@ -23,14 +23,14 @@ app.options(/.*/, cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+setupSwagger(app);
 RegisterRoutes(app);
 
 app.use('/livros', livroRoutes);
 app.use('/categorias', categoriaRoutes);
 app.use('/item-pedido', itemPedidoRoutes);
 app.use('/carrinho', carrinhoRoutes);
-
-setupSwagger(app);
 
 app.get('/', (req, res) => {
     res.redirect('/api-docs');
