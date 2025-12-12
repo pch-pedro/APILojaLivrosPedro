@@ -11,9 +11,17 @@ const DOMINIO_VERCEL = process.env.VERCEL_FRONTEND_URL || "http://lectus.vercel.
 app.use(cors({
     origin: DOMINIO_VERCEL, 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    credentials: true 
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+    credentials: true /
 }));
+
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
