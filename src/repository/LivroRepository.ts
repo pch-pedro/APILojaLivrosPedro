@@ -245,7 +245,7 @@ export class LivroRepository{
             valores.push(novosDados.sinopse);
         }
 
-        if(novosDados.image_url){
+        if(novosDados.imageURL){
             campos.push("image_url = ?");
             valores.push(novosDados.image_url);
         }
