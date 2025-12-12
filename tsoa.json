@@ -15,7 +15,7 @@
             },
             "servers": [
                 {
-                    "url": "https://apilojalivros-production.up.railway.app",
+                    "url": "apilojalivrospedro-production.up.railway.app",
                     "description": "Servidor em produção (Railway)"
                 }
             ]
