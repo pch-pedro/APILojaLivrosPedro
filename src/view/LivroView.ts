@@ -11,7 +11,7 @@ export class LivroView {
             preco: livro.preco,
             estoque: livro.estoque,
             sinopse: livro.sinopse,
-            imageURL: livro.image_url,
+            imageURL: livro.imageurl,
             editora: livro.editora,
             data_publicacao: livro.data_publicacao?.toISOString(),
             promocao: livro.promocao
