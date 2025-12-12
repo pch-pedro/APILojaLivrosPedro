@@ -2222,7 +2222,7 @@
 	},
 	"servers": [
 		{
-			"url": "apilojalivrospedro-production.up.railway.app",
+			"url": "https://apilojalivrospedro-production.up.railway.app",
 			"description": "Servidor em produção (Railway)"
 		}
 	]
