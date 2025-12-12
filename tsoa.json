@@ -5,21 +5,16 @@
         "src/controller/**/*.ts"
     ],
     "spec": {
-        "outputDirectory": "src/swagger",
-        "specVersion": 3,
-        "spec": {
-            "info": {
-                "title": "API Livraria Documentação comtestes e etc 1.0",
-                "version": "1.0.2",
-                "description": "Documentação da API usando Swagger para realizacao de testes e etc e tal "
-            },
-            "servers": [
-                {
-                    "url": "https://apilojalivrospedro-production.up.railway.app",
-                    "description": "Servidor em produção (Railway)"
-                }
-            ]
+    "outputDirectory": "src/swagger",
+    "specVersion": 3,
+    "spec": {
+      "servers": [
+        {
+          "url": "https://apilojalivrospedro-production.up.railway.app",
+          "description": "Servidor de produção"
         }
+      ]
+     }
     },
     "routes": {
         "routesDir": "src/route"
