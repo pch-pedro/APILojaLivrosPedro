@@ -9,7 +9,18 @@ const routes_js_1 = require("./route/routes.js");
 const swagger_js_1 = require("./config/swagger.js");
 const databaseInit_js_1 = require("./database/databaseInit.js");
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({ origin: "*" }));
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
+app.use((0, cors_1.default)({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    credentials: false
+}));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // Swagger do TSOA
