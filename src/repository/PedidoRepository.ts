@@ -69,6 +69,7 @@ export class PedidoRepository {
     
     public async criarItemPedidoTable(): Promise<void> {
 
+        await executarComandoSQL(`DROP TABLE IF EXISTS ItemPedido`, []);
         await executarComandoSQL(`DROP TABLE IF EXISTS Pedido`, []);
 
         const query = `

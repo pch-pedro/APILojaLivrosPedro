@@ -44,6 +44,7 @@ class PedidoRepository {
         }
     }
     async criarItemPedidoTable() {
+        await (0, mysql_1.executarComandoSQL)(`DROP TABLE IF EXISTS ItemPedido`, []);
         await (0, mysql_1.executarComandoSQL)(`DROP TABLE IF EXISTS Pedido`, []);
         const query = `
             CREATE TABLE IF NOT EXISTS Pedido (
