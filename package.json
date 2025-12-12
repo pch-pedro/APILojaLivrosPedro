@@ -26,7 +26,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc --ignoreDeprecations 5.0",
+    "build": "npx tsc && cp src/config/swagger.json dist/config/swagger.json",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
