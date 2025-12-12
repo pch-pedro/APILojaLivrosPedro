@@ -7,6 +7,7 @@ import { inicializarTabelas } from './database/databaseInit.js';
 const app = express();
 
 const DOMINIO_VERCEL = process.env.VERCEL_FRONTEND_URL || "http://lectus.vercel.app/";
+origin: DOMINIO_VERCEL,
 
 app.use(cors({
     origin: DOMINIO_VERCEL, 
